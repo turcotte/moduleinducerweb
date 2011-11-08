@@ -1,0 +1,92 @@
+<script type="text/javascript"> 
+		/* <![CDATA[ */
+		var state = 'none';
+		
+		
+		function showhide(layer_ref) {
+		
+			if (state == 'block') { 
+				state = 'none'; 
+			} else { 
+				state = 'block'; 
+			} 
+		
+			if (document.all) { //IS IE 4 or 5 (or 6 beta) 
+				eval( "document.all." + layer_ref + ".style.display = state"); 
+			} 
+		
+			if (document.layers) { //IS NETSCAPE 4 or below 
+				document.layers[layer_ref].display = state; 
+			} 
+			
+			if (document.getElementById &&!document.all) { 
+				hza = document.getElementById(layer_ref); 
+				hza.style.display = state; 
+			} 
+		}
+		
+		/* ]]> */
+		 
+		</script> 
+
+
+
+
+<!--
+		<h:panelGrid columns="3">
+			<h:outputLabel for="posFileId" value="Positive sequences file: "></h:outputLabel>
+			<t:inputFileUpload id="posFileId" value="#{customDataBean.posFile}" storage="file"  required="true"/>
+			
+			<table border="0">
+			<tr><td>
+			<a href="#" onclick="showhide('div1');"><img src="help.jpg" width="25" height="25" border="no"/></a>
+			</td><td>
+			<div id="div1" style="display: none; background-color: #C3FDB8;">
+			File containing a set of positive example sequences. File format: any text file in a fasta-like format, 
+			i.e. each sequence should be preceded by a line, starting with &#62; then a space, then a name of the sequence. 
+			Sequence names are expected to be unique. For a format example, see example C.elegans data.
+			</div> 
+			</td></tr>
+			</table>
+			
+			<h:outputLabel for="negFileId" value="Negative sequences file: "></h:outputLabel>
+			<t:inputFileUpload id="negFileId" value="#{customDataBean.negFile}" storage="file" required="true"/>
+
+			<table border="0">
+			<tr><td>
+			<a href="#" onclick="showhide('div2');"><img src="help.jpg" width="25" height="25" border="no"/></a>
+			</td><td>
+			<div id="div2" style="display: none; background-color: #C3FDB8;">
+			File containing a set of negative example sequences. File format: same as positive example sequences.
+			For a format example, see example C.elegans data. Note that sequence names should be unique and distinct
+			from the positive example sequences.
+			</div> 
+			</td></tr>
+			</table>			
+
+			
+			<h:outputLabel for="pwmFileId" value="PWMs file: "></h:outputLabel>
+			<t:inputFileUpload id="pwmFileId" value="#{customDataBean.pwmFile}" storage="file" required="true"/>
+			
+			<table border="0">
+			<tr><td>
+			<a href="#" onclick="showhide('div3');"><img src="help.jpg" width="25" height="25" border="no"/></a>
+			</td><td>
+			<div id="div3" style="display: none; background-color: #C3FDB8;">
+			File containing a set of position weight matrices. File format: text file, fasta-like, i.e each matrix
+			is preceded by a line starting with &#62; then a white space then a PWM name. For a format example, see example C.elegans data.
+			</div> 
+			</td></tr>
+			</table>
+			 
+			 
+			 
+			<h:commandButton action="#{customDataBean.induceTheory}" value=" Induce Theory "></h:commandButton>
+			<h:commandButton action="#{customDataBean.reset}" value="Reset"></h:commandButton>
+			<h:panelGroup></h:panelGroup>
+				
+			
+		</h:panelGrid>
+		
+		
+		-->	

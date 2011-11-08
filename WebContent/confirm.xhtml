@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+	
+	
+<h:head>
+	<title>Module Inducer</title>
+</h:head>
+
+<h:body>
+<f:view>
+
+	<div style="border-style:solid; border-width:1px; border-color: #348017;  font-family: Verdana, Geneva, sans-serif; text-align: center; font-size: 9pt;">
+	<h2 style="text-align: center;  font-family: Verdana, Geneva, sans-serif; font-size: 13pt;">Module Inducer</h2>
+	Extract knowledge from biological data.<br/>
+	Oksana Korol and Marcel Turcotte, University of Ottawa
+	<br/>&nbsp;
+	</div>
+	
+	<div style="margin: 2em 2em 2em 2em; font-family: Verdana, Geneva, sans-serif; font-size: 10pt; ">
+	Your data has been submitted for processing. Please check the page below for your results. 
+	Note that it may take a while for the data to be processed, therefore save the link below to consult it later.
+	<br/><br/>
+	
+	<a href="./#{customDataBean.workPath}result.html">Result</a><br/>
+	
+	<!--
+	<br/> Works directly in WebContent directory:<br/>
+	<a href="result.html"> result.html</a><br/>
+	<a href="./result.html"> ./result.html</a><br/>
+
+	<br/> Works in previously created subdirectories: <br/>
+	<a href="./work/result.html"> ./work/result.html</a><br/>
+	<a href="./work/mi_1300204040505/result.html"> ./work/mi_1300204040505/result.html</a><br/>
+
+	<br/> Doesn't work in on-the-fly created subdirectories: <br/>
+	<a href="#{customDataBean.workPath}result.html">Real result: work/mi_.../result.html</a><br/>
+	<a href="./#{customDataBean.workPath}result.html">Real result: ./work/mi_.../result.html</a><br/>
+	-->
+	
+	</div>
+	
+</f:view>
+</h:body>
+
+</html>

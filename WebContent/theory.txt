@@ -1,0 +1,194 @@
+
+[settings]
+        abduce=false
+        cache_clauselength=3
+        caching=false
+        check_good=false
+        check_redundant=false
+        check_useless=false
+        clauselength=4
+        condition=false
+        confidence=0.95
+        construct_bottom=saturation
+        depth=10
+        evalfn=coverage
+        explore=false
+        good=false
+        greedy=true
+        gsamplesize=100
+        i=2
+        interactive=false
+        language=1e+010
+        lazy_negs=false
+        lazy_on_contradiction=false
+        lazy_on_cost=false
+        lookahead=1
+        max_abducibles=2
+        max_features=1e+010
+        minacc=0.0
+        mingain=0.05
+        minpos=1
+        minposfrac=0
+        minscore= -1e+010
+        moves=5
+        newvars=1e+010
+        nodes=5000
+        noise=0
+        nreduce_bottom=false
+        openlist=1e+010
+        optimise_clauses=false
+        permute_bottom=false
+        portray_examples=false
+        portray_hypothesis=false
+        portray_literals=false
+        portray_search=false
+        print=4
+        prior=[0.142857-pos, 0.857143-neg]
+        proof_strategy=restricted_sld
+        prooftime=1e+010
+        prune_tree=false
+        record=true
+        recordfile=C:/(Oxy/workspace_Helios/tmpOutModuleInducer/mi_1299618205297/theory.txt
+        recordfile_stream= $stream(2342868)
+        refine=false
+        refineop=false
+        resample=1
+        rls_type=gsat
+        samplesize=0
+        search=bf
+        searchstrat=bf
+        searchtime=1e+010
+        skolemvars=10000
+        splitvars=false
+        stage=command
+        store_bottom=false
+        subsample=false
+        subsamplesize=1e+010
+        threads=1
+        train_neg=moduleInducer.n
+        train_pos=moduleInducer.f
+        tries=10
+        typeoverlap=0.95
+        uniform_sample=false
+        updateback=true
+        verbosity=1
+        version=5
+[sat] [1]
+[-------------------------------------]
+[found clause]
+has_crm(A) :-
+   distance(ccaat_box, gc_box, A, 862).
+[pos cover = 2 neg cover = 0] [pos-neg] [2]
+[clause label] [[2, 0, 2, 2]]
+[clauses constructed] [94]
+[-------------------------------------]
+[-------------------------------------]
+[found clause]
+has_crm(A) :-
+   before(m2, gc_box, A), before(m2, m10, A).
+[pos cover = 6 neg cover = 0] [pos-neg] [6]
+[clause label] [[6, 0, 3, 6]]
+[clauses constructed] [98]
+[-------------------------------------]
+[-------------------------------------]
+[found clause]
+has_crm(A) :-
+   before(m2, m12, A), before(m7, m10, A).
+[pos cover = 8 neg cover = 0] [pos-neg] [8]
+[clause label] [[8, 0, 3, 8]]
+[clauses constructed] [157]
+[-------------------------------------]
+[-------------------------------------]
+[found clause]
+has_crm(A) :-
+   before(m2, m6, A), before(m7, m12, A).
+[pos cover = 10 neg cover = 0] [pos-neg] [10]
+[clause label] [[10, 0, 3, 10]]
+[clauses constructed] [262]
+[-------------------------------------]
+[-------------------------------------]
+[found clause]
+has_crm(A) :-
+   has_tfbs(A, m2), before(m6, m7, A), before(m7, m12, A).
+[pos cover = 11 neg cover = 0] [pos-neg] [11]
+[clause label] [[11, 0, 4, 11]]
+[clauses constructed] [836]
+[-------------------------------------]
+[clauses constructed] [917]
+[search time] [0.156001]
+[best clause]
+has_crm(A) :-
+   has_tfbs(A, m2), before(m6, m7, A), before(m7, m12, A).
+[positive examples left] [5]
+[estimated time to finish (secs)] [0.0709095]
+[sat] [3]
+[-------------------------------------]
+[found clause]
+has_crm(A) :-
+   before(m5, m4, A), before(m6, m7, A).
+[pos cover = 2 neg cover = 0] [pos-neg] [2]
+[clause label] [[2, 0, 3, 2]]
+[clauses constructed] [52]
+[-------------------------------------]
+[clauses constructed] [339]
+[search time] [0.0624004]
+[best clause]
+has_crm(A) :-
+   before(m5, m4, A), before(m6, m7, A).
+[positive examples left] [3]
+[estimated time to finish (secs)] [0.0504003]
+[sat] [4]
+[clauses constructed] [273]
+[search time] [0.0624004]
+[best clause]
+has_crm('C36E6.5').
+[positive examples left] [2]
+[estimated time to finish (secs)] [0.0401145]
+[sat] [7]
+[clauses constructed] [56]
+[search time] [0.0]
+[best clause]
+has_crm('F29F11.5').
+[positive examples left] [1]
+[estimated time to finish (secs)] [0.0187201]
+[sat] [10]
+[clauses constructed] [1]
+[search time] [0.0]
+[best clause]
+has_crm('F58A3.2a').
+[positive examples left] [0]
+[estimated time to finish (secs)] [0.0]
+
+[theory]
+
+[Rule 1] [Pos cover = 11 Neg cover = 0]
+has_crm(A) :-
+   has_tfbs(A, m2), before(m6, m7, A), before(m7, m12, A).
+
+[Rule 2] [Pos cover = 3 Neg cover = 0]
+has_crm(A) :-
+   before(m5, m4, A), before(m6, m7, A).
+
+[Rule 3] [Pos cover = 1 Neg cover = 0]
+has_crm('C36E6.5').
+
+[Rule 4] [Pos cover = 1 Neg cover = 0]
+has_crm('F29F11.5').
+
+[Rule 5] [Pos cover = 1 Neg cover = 0]
+has_crm('F58A3.2a').
+
+[Training set performance]
+           Actual
+        +          -  
+     +  16          0          16  
+Pred 
+     -  0          96          96  
+
+        16          96         112 
+
+Accuracy = 1
+[Training set summary] [[16, 0, 0, 96]]
+[time taken] [0.343202]
+
+[total clauses constructed] [1586]

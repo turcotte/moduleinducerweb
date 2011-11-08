@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+	
+	
+<h:head>
+	<title>Module Inducer</title>
+	
+	
+	<script language="javascript">
+    <!--
+    
+    var negSpecState;
+    var posOnlyState;
+   
+    function enableDisableNegEx(radio, layer_ref1, layer_ref2) {
+    	
+    	if (radio.value == 'posOnly'){
+    		negSpecState = 'none'; 
+    		posOnlyState = 'block';
+    	} else {
+    		negSpecState = 'block';
+        	posOnlyState = 'none';
+    	}
+    	
+   
+        if (document.all) { //IS IE 4 or 5 (or 6 beta)
+            eval( "document.all." + layer_ref1 + ".style.display = negSpecState");
+            eval( "document.all." + layer_ref2 + ".style.display = posOnlyState");
+        }
+   
+        if (document.layers) { //IS NETSCAPE 4 or below
+            document.layers[layer_ref1].display = negSpecState;
+            document.layers[layer_ref2].display = posOnlyState;
+        }
+       
+        if (document.getElementById && !document.all) {
+            hza1 = document.getElementById(layer_ref1);
+            hza1.style.display = negSpecState;
+            
+            hza2 = document.getElementById(layer_ref2);
+            hza2.style.display = posOnlyState;
+        }
+        
+        
+    }
+   
+   
+    //-->
+    </script>     
+    
+</h:head>
+
+<h:body>
+
+<div style="width: 770px">
+
+<f:view>
+
+	<div style="border-style:solid; border-width:1px; border-color: #348017;  font-family: Verdana, Geneva, sans-serif; text-align: center; font-size: 9pt;">
+	<h2 style="text-align: center;  font-family: Verdana, Geneva, sans-serif; font-size: 13pt;">Module Inducer</h2>
+	Extract knowledge from biological data.<br/>
+	Oksana Korol and Marcel Turcotte, University of Ottawa
+	<br/>&nbsp;
+	</div>
+	
+ 	<div style="margin: 25px 25px 25px 25px; font-family: Verdana, Geneva, sans-serif; font-size: 10pt;">
+	
+	<div>
+	
+	<h:form id="dataSelectForm" >
+		<h:outputLabel for="selectDataId" value="Select the kind of data you want to work with:  "></h:outputLabel>
+		<h:selectOneMenu id="selectDataId" value="#{navigationBean.selectedData}">
+			<f:selectItem itemValue="default" itemLabel=" -- "/>
+			<f:selectItem itemValue="Celegans" itemLabel="Example C.elegans data"/>
+			<f:selectItem itemValue="custom" itemLabel="Custom data"/>
+		</h:selectOneMenu>
+		&nbsp;
+		<h:commandButton action="#{navigationBean.loadData}" styleClass="background-color: #348017" value=" Next >> "></h:commandButton>
+	</h:form>
+	
+	<br/>
+	
+	<div style="text-align: left; background-color: #FFF380">
+	<h:messages />	
+	</div>
+	
+	
+	
+	
+	<h:panelGroup rendered="#{navigationBean.customData==true}">
+	
+		<p style="text-align: left; background-color: #C3FDB8"> This version of Module Inducer is a 
+		demonstration system, therefore the number and length of the input sequences is restricted to 150 and 3000 nt 
+		respectively. The number of regulatory elements is restricted to 15. If you have any question or would like to 
+		run Module Inducer on a larger data set, please write to us: Module.Inducer@site.uOttawa.ca
+		</p>
+		
+		<h:form id="customDataFormId" name="customDataForm">
+		
+		
+		<h:panelGrid columns="1">
+			
+				<h:panelGroup>
+					<br/>
+					<h:outputLabel for="positiveSequencesTextArea" value="Positive sequences: "></h:outputLabel><br/>
+					<h:inputTextarea id="positiveSequencesTextArea" value="#{customDataBean.posSequences}" style="width: 720px" rows="10" 
+									validator="#{customDataBean.validateBioSequence}" required="true" />
+				</h:panelGroup>
+			 
+			 
+				
+				<h:panelGroup >
+                   <br/><br/>
+                    <h:selectOneRadio id="negExRadioId" value="#{customDataBean.negExType}" onchange="enableDisableNegEx(this,'negSpecDiv', 'posOnlyDiv');">
+                        <f:selectItem itemValue="negSpec" itemLabel="Specify negative sequences or" />  
+                        <f:selectItem itemValue="posOnly" itemLabel=" Positive only learning" />
+                    </h:selectOneRadio>
+                </h:panelGroup>
+               
+                
+                
+				<h:panelGroup >
+
+					<div id="negSpecDiv" style="display: #{customDataBean.negSpecDivVisibility};">
+						<h:outputLabel value="Negative sequences: "></h:outputLabel><br/>
+						<h:inputTextarea id="negativeSequencesTextArea" value="#{customDataBean.negSequences}" style="width: 720px" rows="10" 
+										validator="#{customDataBean.validateBioSequence}" required="false"   />
+						
+					</div>
+	
+					<div id="posOnlyDiv" style="display: #{customDataBean.posOnlyDivVisibility}; margin-left: 2em; ">
+						<h:outputLabel for="negExMultFactorSelectId" value="Select a multiplication factor of the negative examples to be generated with respect to the positive: "></h:outputLabel>
+	                    <h:selectOneMenu id="negExMultFactorSelectId" value="#{customDataBean.negSeqMultFactor}">
+	                        <f:selectItem itemValue="1" itemLabel="1 (same number as positive examples)"/>
+	                        <f:selectItem itemValue="2" itemLabel="2 (twice as many as positive examples)"/>
+	                        <f:selectItem itemValue="3" itemLabel="3"/>
+	                        <f:selectItem itemValue="4" itemLabel="4"/>
+	                        <f:selectItem itemValue="5" itemLabel="5"/>
+	                    </h:selectOneMenu>
+					</div>
+
+				</h:panelGroup>
+				
+				
+				
+				<h:panelGroup>		
+					<br/><br/>
+					<h:outputLabel value="Biological markers (PWMs): "></h:outputLabel><br/>
+					<h:inputTextarea id="pwmSequencesTextArea" value="#{customDataBean.pwms}" style="width: 720px" rows="10" 
+									 required="true" />
+				</h:panelGroup>
+			
+			
+		
+			</h:panelGrid>
+			
+			<br/><br/>
+			<h:commandButton action="#{customDataBean.induceTheory}" value=" Induce Theory >> "></h:commandButton>
+			<br/><br/>
+	
+			
+		</h:form>
+		
+		<h:panelGroup rendered="#{customDataBean.theoryInduced==true}">
+				
+				<h3> Resulting theory: </h3>
+	
+				<h:panelGrid columns="1">
+	
+					<h:panelGroup>				
+					<form method="post" action="">
+						<textarea name="theory" style="width: 720px" rows="20" readonly="readonly">
+								<h:outputText value="#{customDataBean.theory}"></h:outputText>
+						</textarea><br/>				
+					</form>
+					</h:panelGroup>
+			
+					<h:panelGroup>	
+						<p style="text-align: left; background-color: #C3FDB8">
+						<b>How to read the theory </b>
+						<br/><br/>
+						The theory consists of several rules that describe positive examples. You can see how "strong" the rule is by the number of 
+						positive and negative examples covered ([Pos cover = 12 Neg cover = 0]). In ideal case, when one rule describes all the data,
+						then the positive cover will be the total number of positive sequences (in this case 16) and the negative cover will be 0.
+						<br/><br/>
+						Example of reading a rule.
+						<br/><br/>&nbsp;&nbsp;has_crm(A) :-<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;has_tfbs(A,m2), before(m7,m12,A).<br/><br/>
+						Sequence A has cis-regulatory module if it has a transcription factor binding site (TFBS) m2 AND TFBS m7 is before m12.
+						<br/><br/>
+						<b>Description of possible theory rules:</b>
+						<br/>&nbsp;&nbsp;<i>has_tfbs(A,m1)</i> - regulatory element m1 is located in A sequences
+						<br/>&nbsp;&nbsp;<i>before(m1, m2, A)</i> - regulatory element m1 is located before m2 in A sequences
+						<br/>&nbsp;&nbsp;<i>distance(m1, m2, A, 10)</i> - the distance between regulatory element m1 and m2 is exactly 10 nucleotides in A sequences
+						<br/>&nbsp;&nbsp;<i>distance_interval(m1, m2, A, 10, 2)</i> - the distance between regulatory element m1 and m2 is 10 nucleotides in A sequences
+						</p>
+					</h:panelGroup>
+		
+				</h:panelGrid>
+			</h:panelGroup>
+		
+		
+	</h:panelGroup>
+
+
+
+
+	<h:panelGroup rendered="#{navigationBean.cElegansData==true}">
+	
+	<p style="text-align: left; background-color: #C3FDB8">
+				Data were extracted from the article: Zhao G., Schriefer L., Stormo G. <i>Identification of muscle-specific regulatory modules in 
+				Caenorhabditis elegans.</i> <b>Genome Research</b>, 17: 348-357, 2007.
+	</p>
+			
+	<h:form id="celegansForm">
+		
+		<h:panelGrid columns="1">
+		
+			<h:panelGroup>
+				<br/>
+				<h:outputLabel for="cElPosSeqTextId" value="Positive sequences: "></h:outputLabel><br/>
+				<h:inputTextarea id="cElPosSeqTextId" value="#{celegansDataBean.posSequences}" style="width: 720px" rows="10" readonly="true" />
+				<br/>
+			</h:panelGroup>
+		
+			
+			
+			<h:panelGroup >
+				<br/><br/>
+				<h:outputLabel for="cElNegSeqTextId" value="Negative sequences: "></h:outputLabel><br/>
+				<h:inputTextarea id="cElNegSeqTextId" value="#{celegansDataBean.negSequences}" style="width: 720px" rows="10" readonly="true" />
+				
+
+				<p style="text-align: left; vertical-align: top; background-color: #C3FDB8">
+					Negative sequences were randomly generated using Markov Chain order 1 model based on the nucleotide composition of the positive sequences. 
+				</p>
+			</h:panelGroup>
+			
+			
+			<h:panelGroup>	
+				<br/><br/>	
+				<h:outputLabel for="cElPwmTextId" value="Biological markers (PWMs): "></h:outputLabel><br/>
+				<h:inputTextarea id="cElPwmTextId" value="#{celegansDataBean.pwms}" style="width: 720px" rows="10" readonly="true" />
+				<br/>
+			</h:panelGroup>
+		
+	
+		</h:panelGrid>
+		
+		<br/><br/>
+		<h:commandButton action="#{celegansDataBean.induceTheory}" value=" Induce Theory >> "></h:commandButton>
+		<br/><br/>
+		
+	</h:form>
+
+	
+		<h:panelGroup rendered="#{celegansDataBean.theoryInduced==true}">
+			
+			<h3> Resulting theory: </h3>
+
+			<h:panelGrid columns="1">
+
+				<h:panelGroup>		
+				<h:inputTextarea id="cElTheoryTextId" value="#{celegansDataBean.theory}" style="width: 720px" rows="20" readonly="true" />
+				</h:panelGroup>
+		
+				<h:panelGroup>	
+					<p style=" text-align: left; background-color: #C3FDB8">
+					<b>How to read the theory </b>
+					<br/><br/>
+					The theory consists of several rules that describe positive examples. You can see how "strong" the rule is by the number of 
+					positive and negative examples covered ([Pos cover = 12 Neg cover = 0]). In ideal case, when one rule describes all the data,
+					then the positive cover will be the total number of positive sequences (in this case 16) and the negative cover will be 0.
+					<br/><br/>
+					Example of reading a rule.
+					<i><br/><br/>&nbsp;&nbsp;has_crm(A) :-<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;has_tfbs(A,m2), before(m7,m12,A).<br/><br/></i>
+					Sequence A has cis-regulatory module if it has a transcription factor binding site (TFBS) m2 AND TFBS m7 is before m12.
+					<br/><br/>
+						<b>Description of possible theory rules:</b>
+						<br/>&nbsp;&nbsp;<i>has_tfbs(A,m1)</i> - regulatory element m1 is located in A sequences
+						<br/>&nbsp;&nbsp;<i>before(m1, m2, A)</i> - regulatory element m1 is located before m2 in A sequences
+						<br/>&nbsp;&nbsp;<i>distance(m1, m2, A, 10)</i> - the distance between regulatory element m1 and m2 is exactly 10 nucleotides in A sequences
+						<br/>&nbsp;&nbsp;<i>distance_interval(m1, m2, A, 10, 2)</i> - the distance between regulatory element m1 and m2 is 10 nucleotides in A sequences
+					</p>
+				</h:panelGroup>
+	
+			</h:panelGrid>
+		</h:panelGroup>
+	
+	</h:panelGroup>
+	
+	
+	</div>
+	
+	</div>
+
+</f:view>
+
+</div>
+
+</h:body>
+</html>
