@@ -45,7 +45,7 @@ public class CelegansDataBean {
 			
 			tempDataDir = FileHandling.createTempIlpOutputDirectory();
 			
-			regRegionService = new CElegansRegRegionService(6);
+			regRegionService = new CElegansRegRegionService(1);
 			
 			File pwmDir = new File(SystemVariables.getInstance().getString("C.elegans.PWMs.dir"));
 			patserRegElService = new PatserRegElementService(pwmDir, tempDataDir);
