@@ -15,33 +15,27 @@
     var negSpecState;
     var posOnlyState;
    
-    function enableDisableNegEx(radio, layer_ref1, layer_ref2) {
+    function enableDisableNegEx(radio, layer_ref1) {
     	
-    	if (radio.value == 'posOnly'){
-    		negSpecState = 'none'; 
-    		posOnlyState = 'block';
-    	} else {
+    	if (radio.value == 'negSpec'){
     		negSpecState = 'block';
-        	posOnlyState = 'none';
+    	} else {
+    		negSpecState = 'none'; 
     	}
     	
    
         if (document.all) { //IS IE 4 or 5 (or 6 beta)
             eval( "document.all." + layer_ref1 + ".style.display = negSpecState");
-            eval( "document.all." + layer_ref2 + ".style.display = posOnlyState");
         }
    
         if (document.layers) { //IS NETSCAPE 4 or below
             document.layers[layer_ref1].display = negSpecState;
-            document.layers[layer_ref2].display = posOnlyState;
         }
        
         if (document.getElementById && !document.all) {
             hza1 = document.getElementById(layer_ref1);
             hza1.style.display = negSpecState;
-            
-            hza2 = document.getElementById(layer_ref2);
-            hza2.style.display = posOnlyState;
+
         }
         
         
@@ -110,36 +104,25 @@
 									validator="#{customDataBean.validateBioSequence}" required="true" />
 				</h:panelGroup>
 			 
-			 
 				
 				<h:panelGroup >
                    <br/><br/>
-                    <h:selectOneRadio id="negExRadioId" value="#{customDataBean.negExType}" onchange="enableDisableNegEx(this,'negSpecDiv', 'posOnlyDiv');">
-                        <f:selectItem itemValue="negSpec" itemLabel="Specify negative sequences or" />  
-                        <f:selectItem itemValue="posOnly" itemLabel=" Positive only learning" />
+                    <h:outputLabel value="Negative sequences: "></h:outputLabel><br/>
+                    <h:selectOneRadio id="negExRadioId" value="#{customDataBean.negExType}" onchange="enableDisableNegEx(this,'negSpecDiv');">
+                        <f:selectItem itemValue="negSpec" itemLabel="Custom    " />   
+                        <f:selectItem itemValue="mc0" itemLabel=" Same nucleotide composition   " />
+                        <f:selectItem itemValue="mc1" itemLabel=" Markov chain of order 1 " />
                     </h:selectOneRadio>
                 </h:panelGroup>
                
-                
+                <!-- TODO: vaildate the field, if it is active. For now validation is removed -->
                 
 				<h:panelGroup >
 
 					<div id="negSpecDiv" style="display: #{customDataBean.negSpecDivVisibility};">
-						<h:outputLabel value="Negative sequences: "></h:outputLabel><br/>
 						<h:inputTextarea id="negativeSequencesTextArea" value="#{customDataBean.negSequences}" style="width: 720px" rows="10" 
-										validator="#{customDataBean.validateBioSequence}" required="false"   />
+										 required="false"   />
 						
-					</div>
-	
-					<div id="posOnlyDiv" style="display: #{customDataBean.posOnlyDivVisibility}; margin-left: 2em; ">
-						<h:outputLabel for="negExMultFactorSelectId" value="Select a multiplication factor of the negative examples to be generated with respect to the positive: "></h:outputLabel>
-	                    <h:selectOneMenu id="negExMultFactorSelectId" value="#{customDataBean.negSeqMultFactor}">
-	                        <f:selectItem itemValue="1" itemLabel="1 (same number as positive examples)"/>
-	                        <f:selectItem itemValue="2" itemLabel="2 (twice as many as positive examples)"/>
-	                        <f:selectItem itemValue="3" itemLabel="3"/>
-	                        <f:selectItem itemValue="4" itemLabel="4"/>
-	                        <f:selectItem itemValue="5" itemLabel="5"/>
-	                    </h:selectOneMenu>
 					</div>
 
 				</h:panelGroup>

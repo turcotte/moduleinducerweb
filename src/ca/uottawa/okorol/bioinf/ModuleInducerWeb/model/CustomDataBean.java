@@ -1,6 +1,7 @@
 package ca.uottawa.okorol.bioinf.ModuleInducerWeb.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -9,12 +10,14 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
+import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.CustomDataRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Explorer;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.PatserRegElementService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.DataFormatter;
+import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FeaturesTools;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 
 @ManagedBean
@@ -48,7 +51,6 @@ public class CustomDataBean {
 	private String theory;
 	private String posSequences;
 	private String negSequences;
-	private String negSeqMultFactor;
 	private String pwms;
 	
 	private String workPath;
@@ -79,16 +81,24 @@ public class CustomDataBean {
 			 
 
 			CustomDataRegRegionService customRegRegService;
+			ArrayList<Feature> posRegRegions = CustomDataRegRegionService.formatRegulatoryRegions(posSequences);
+			ArrayList<Feature> negRegRegions;
 			
-			if ("posOnly".equals(negExType)){
-				customRegRegService = new CustomDataRegRegionService(posSequences, Integer.parseInt(negSeqMultFactor));
+			if ("mc0".equals(negExType)){
+				negRegRegions = FeaturesTools.generateSimulatedMC0RegulatoryRegions(posRegRegions, 1, "mc0_");
+				
+			} else if ("mc1".equals(negExType)) {
+				negRegRegions = FeaturesTools.generateSimulatedMC1RegulatoryRegions(posRegRegions, 1, "mc1_");
+				
 			} else {
 				if (negSequences == null || negSequences.isEmpty()){
 					throw new DataFormatException("Negative example sequences were not specified.");
 				}
-				customRegRegService = new CustomDataRegRegionService(
-						posSequences, negSequences);
+				
+				negRegRegions = CustomDataRegRegionService.formatRegulatoryRegions(negSequences);
 			}
+			
+			customRegRegService = new CustomDataRegRegionService(posRegRegions, negRegRegions);
 			
 			PatserRegElementService patserRegElService = new PatserRegElementService(pwms, theoryOutputDir);
 						
@@ -211,13 +221,6 @@ public class CustomDataBean {
 	}
 	public void setNegSequences(String negSequences) {
 		this.negSequences = negSequences;
-	}
-	
-	public String getNegSeqMultFactor() {
-		return negSeqMultFactor;
-	}
-	public void setNegSeqMultFactor(String negSeqMultFactor) {
-		this.negSeqMultFactor = negSeqMultFactor;
 	}
 
 	public String getPwms() {
