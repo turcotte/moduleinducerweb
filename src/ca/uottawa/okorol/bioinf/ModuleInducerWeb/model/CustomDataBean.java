@@ -12,9 +12,11 @@ import javax.faces.validator.ValidatorException;
 
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
+import ca.uottawa.okorol.bioinf.ModuleInducer.interfaces.RegulatoryElementService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.CustomDataRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Explorer;
+import ca.uottawa.okorol.bioinf.ModuleInducer.services.MemeSuiteRegElementService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.PatserRegElementService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.DataFormatter;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FeaturesTools;
@@ -26,9 +28,20 @@ public class CustomDataBean {
 	
 	//page navigation
 	private boolean theoryInduced = false;
-	private String negExType = "negSpec";
-	//private String posOnlyDivVisibility = "block";
-	//private String negSpecDivVisibility = "none";
+	private String negExType = NEG_EX_SHOW_RADIO_VALUE;
+	private String bioMarkersType = "useDreme";
+//	private String customNegExDivVisibility = SHOW;
+	private String customNegExDivVisibility = getCustomNegExDivVisibility();
+	private String customPSSMsDivDivVisibility = getCustomPSSMsDivDivVisibility();
+	
+
+	//Page constants
+	private static String SHOW = "block";
+	private static String HIDE = "none";
+	private static String NEG_EX_SHOW_RADIO_VALUE = "customNegEx";
+	private static String BIO_MARKERS_SHOW_RADIO_VALUE = "customPSSMs";
+	
+
 
 	public String getNegSpecDivVisibility() {
 		String visibility = "block";
@@ -81,7 +94,13 @@ public class CustomDataBean {
 			 
 
 			CustomDataRegRegionService customRegRegService;
+			/************ Positive Sequences ****/
+			if (null == posSequences || posSequences.isEmpty()){
+				throw new DataFormatException("Please specify experiment sequences.");
+			}
 			ArrayList<Feature> posRegRegions = CustomDataRegRegionService.formatRegulatoryRegions(posSequences);
+			
+			/************ Negative Sequences ****/
 			ArrayList<Feature> negRegRegions;
 			
 			if ("mc0".equals(negExType)){
@@ -91,20 +110,36 @@ public class CustomDataBean {
 				negRegRegions = FeaturesTools.generateSimulatedMC1RegulatoryRegions(posRegRegions, 1, "mc1_");
 				
 			} else {
-				if (negSequences == null || negSequences.isEmpty()){
-					throw new DataFormatException("Negative example sequences were not specified.");
+				if (null == negSequences || negSequences.isEmpty()){
+					throw new DataFormatException("Please specify control sequences.");
 				}
 				
 				negRegRegions = CustomDataRegRegionService.formatRegulatoryRegions(negSequences);
 			}
 			
 			customRegRegService = new CustomDataRegRegionService(posRegRegions, negRegRegions);
+
 			
-			PatserRegElementService patserRegElService = new PatserRegElementService(pwms, theoryOutputDir);
-						
-			Explorer explorer = new Explorer(customRegRegService, patserRegElService, theoryOutputDir);
+			/************ Bio Markers ****/
+			RegulatoryElementService regElService;
 			
+			if ("customPSSMs".equals(bioMarkersType)){
+				if (null == pwms  || pwms.isEmpty()){
+					throw new DataFormatException("Please specify biological markers (PSSMs).");
+				}
+				
+				regElService = new PatserRegElementService(pwms, theoryOutputDir);
+				
+			} else { 	// use DREME
+				regElService = new MemeSuiteRegElementService(theoryOutputDir);
+				
+			}
+			//PatserRegElementService patserRegElService = new PatserRegElementService(pwms, theoryOutputDir);
 			
+			/************ Find and load up everything (sequences, biomarkers) ****/
+			Explorer explorer = new Explorer(customRegRegService, regElService, theoryOutputDir);
+			
+			/************ Create ilp files and induce ****/
 			String completeOutput = explorer.induceRules();
 			theory = DataFormatter.extractTheoryAndPerformance(completeOutput);
 			
@@ -163,7 +198,7 @@ public class CustomDataBean {
 		String oneFastaSection = "\\s*" + fastaNameSeqRegEx + "\\s*\n+" + "[ACGTacgt]+" ;
 		String fastaSeqRegEx = "(" + oneFastaSection + "[ \t\r]*\n" + ")*" + oneFastaSection + "\\s*" ;
 		
-		if (bioSequence == null || !bioSequence.matches(fastaSeqRegEx)){
+		if (!bioSequence.matches(fastaSeqRegEx)){
 			FacesMessage msg = new FacesMessage("Supplied sequences are not in the correct format.\n " +
 					"Make sure each sequence has a name, which precedes the sequence and starts with \"> \".\n" +
 					"Also verify that each sequece only contains {A,C,G,T} or {a,c,g,t} letters.\n " +
@@ -243,6 +278,28 @@ public class CustomDataBean {
 	public void setNegExType(String negExType) {
 		this.negExType = negExType;
 	}
+	
+	public String getBioMarkersType() {
+		return bioMarkersType;
+	}
+	public void setBioMarkersType(String bioMarkersType) {
+		this.bioMarkersType = bioMarkersType;
+	}
+
+	public String getCustomNegExDivVisibility() {
+		if (NEG_EX_SHOW_RADIO_VALUE.equals(negExType)){
+			return SHOW;
+		}
+		return HIDE;
+	}
+	
+	public String getCustomPSSMsDivDivVisibility() {
+		if (BIO_MARKERS_SHOW_RADIO_VALUE.equals(bioMarkersType)){
+			return SHOW;
+		}
+		return HIDE;
+	}
+
 
 
 	

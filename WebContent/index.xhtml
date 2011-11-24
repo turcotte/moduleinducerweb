@@ -8,36 +8,99 @@
 <h:head>
 	<title>Module Inducer</title>
 	
+	<style> 
+    <!--
+		* { 
+		    
+		    font-family: Verdana, Geneva, sans-serif; 
+		    font-size: 10pt; 
+		}
+		
+		.main {
+			width: 770px;
+		    margin: 25px 25px 25px 25px; 
+		    font-size: 10pt;
+		}
+		
+		.title{
+			font-size: 13pt;
+		}
+		
+		.header {
+			border-style:solid; 
+			border-width:1px; 
+			border-color: #348017;  
+			padding: 10px;
+			margin: 0px;
+			text-align: center; 
+			font-size: 9pt;
+		}
+		
+		.data-entry-title {
+			font-size: 12pt;
+		}
+		
+		.data-entry-area {
+			margin: 0px 0px 25px 35px;
+			padding: 0;
+		}
+		
+		.info-message {
+			background-color: #C3FDB8;
+			padding: 4px;
+			text-align: left; 
+			/*vertical-align: top;*/ 
+		}
+		
+		.text-entry-area {
+			width: 720px;
+			padding: 0;
+			margin: 0;
+		}
+		
+    -->
+   </style>
+   
+	
+	<!--  None of the below work, so had to include css in the page
+	<style media="screen" type="text/css">
+  		@import "#{facesContext.externalContext.request.contextPath}/css/mi_style.css"
+	</style>
+	<link href="${facesContext.externalContext.requestContextPath}/css/mi_style.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" type="text/css" href="${request.contextPath}/css/mi_style.css" />
+	<link rel="stylesheet" type="text/css" href="mi_style.css" />
+	<h:outputStylesheet library="css" name="/css/mi_style.css"  /> - placed in body
+	-->
+	
 	
 	<script language="javascript">
     <!--
     
-    var negSpecState;
-    var posOnlyState;
-   
-    function enableDisableNegEx(radio, layer_ref1) {
+    // If a specific value (expectedRadioValue) of a radiobutton (radioEL) is selected,
+    // then display an element with a specified id (elementToDisplay).
+    function radioToggle1(radioEL, expectedRadioValue, elementToDisplay) {
+	    
+    	var displayState;
     	
-    	if (radio.value == 'negSpec'){
-    		negSpecState = 'block';
+    	if (radioEL.value == expectedRadioValue){
+    		displayState = 'block';
     	} else {
-    		negSpecState = 'none'; 
+    		displayState = 'none'; 
     	}
     	
    
         if (document.all) { //IS IE 4 or 5 (or 6 beta)
-            eval( "document.all." + layer_ref1 + ".style.display = negSpecState");
+            eval( "document.all." + elementToDisplay + ".style.display = "+ displayState);
         }
    
         if (document.layers) { //IS NETSCAPE 4 or below
-            document.layers[layer_ref1].display = negSpecState;
+            document.layers[elementToDisplay].display = displayState;
         }
        
         if (document.getElementById && !document.all) {
-            hza1 = document.getElementById(layer_ref1);
-            hza1.style.display = negSpecState;
+            document.getElementById(elementToDisplay).style.display = displayState;
 
         }
-        
         
     }
    
@@ -45,22 +108,22 @@
     //-->
     </script>     
     
+
 </h:head>
 
 <h:body>
 
-<div style="width: 770px">
+
+<div class="main">
 
 <f:view>
 
-	<div style="border-style:solid; border-width:1px; border-color: #348017;  font-family: Verdana, Geneva, sans-serif; text-align: center; font-size: 9pt;">
-	<h2 style="text-align: center;  font-family: Verdana, Geneva, sans-serif; font-size: 13pt;">Module Inducer</h2>
-	Extract knowledge from biological data.<br/>
-	Oksana Korol and Marcel Turcotte, University of Ottawa
-	<br/>&nbsp;
+	<div class="header">
+		<div class="title">ModuleInducer</div>
+		Extract patterns from biological data.
 	</div>
-	
- 	<div style="margin: 25px 25px 25px 25px; font-family: Verdana, Geneva, sans-serif; font-size: 10pt;">
+	<br/>
+
 	
 	<div>
 	
@@ -86,7 +149,7 @@
 	
 	<h:panelGroup rendered="#{navigationBean.customData==true}">
 	
-		<p style="text-align: left; background-color: #C3FDB8"> This version of Module Inducer is a 
+		<p class="info-message"> This version of Module Inducer is a 
 		demonstration system, therefore the number and length of the input sequences is restricted to 150 and 3000 nt 
 		respectively. The number of regulatory elements is restricted to 15. If you have any question or would like to 
 		run Module Inducer on a larger data set, please write to us: Module.Inducer@site.uOttawa.ca
@@ -97,43 +160,59 @@
 		
 		<h:panelGrid columns="1">
 			
+				<h:outputLabel for="positiveSequencesTextArea" value="Positive sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
+
 				<h:panelGroup>
-					<br/>
-					<h:outputLabel for="positiveSequencesTextArea" value="Positive sequences: "></h:outputLabel><br/>
-					<h:inputTextarea id="positiveSequencesTextArea" value="#{customDataBean.posSequences}" style="width: 720px" rows="10" 
-									validator="#{customDataBean.validateBioSequence}" required="true" />
+				<div class="data-entry-area">
+<!-- TODO: For now, all the validation is done by exceptions from MI. Better use validator. -->				
+				<!-- 
+					<h:inputTextarea id="positiveSequencesTextArea" value="#{customDataBean.posSequences}" styleClass="text-entry-area" rows="10" 
+								validator="#{customDataBean.validateBioSequence}" required="true" />
+				 -->
+				 
+				 	<h:inputTextarea id="positiveSequencesTextArea" value="#{customDataBean.posSequences}" styleClass="text-entry-area" rows="10" 
+								 required="false" />
+				 
+				</div>
 				</h:panelGroup>
 			 
+			 
 				
-				<h:panelGroup >
-                   <br/><br/>
-                    <h:outputLabel value="Negative sequences: "></h:outputLabel><br/>
-                    <h:selectOneRadio id="negExRadioId" value="#{customDataBean.negExType}" onchange="enableDisableNegEx(this,'negSpecDiv');">
-                        <f:selectItem itemValue="negSpec" itemLabel="Custom    " />   
+                <h:outputLabel value="Negative sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
+				
+				<h:panelGroup>    
+				
+				<div class="data-entry-area">
+                    <h:selectOneRadio id="negExRadioId" value="#{customDataBean.negExType}" onchange="radioToggle1(this, 'customNegEx', 'customNegExDiv');" >
+                        <f:selectItem itemValue="customNegEx" itemLabel="Custom    " />   
                         <f:selectItem itemValue="mc0" itemLabel=" Same nucleotide composition   " />
                         <f:selectItem itemValue="mc1" itemLabel=" Markov chain of order 1 " />
                     </h:selectOneRadio>
+
+					<div id="customNegExDiv" style="display: #{customDataBean.customNegExDivVisibility};" >
+						<h:inputTextarea id="negativeSequencesTextArea" value="#{customDataBean.negSequences}" styleClass="text-entry-area" rows="10" 
+										 required="false"   />	
+					</div>
+					
+				</div>
                 </h:panelGroup>
                
-                <!-- TODO: vaildate the field, if it is active. For now validation is removed -->
                 
-				<h:panelGroup >
-
-					<div id="negSpecDiv" style="display: #{customDataBean.negSpecDivVisibility};">
-						<h:inputTextarea id="negativeSequencesTextArea" value="#{customDataBean.negSequences}" style="width: 720px" rows="10" 
-										 required="false"   />
-						
+				
+				<h:outputLabel value="Biological markers: " styleClass="data-entry-title"></h:outputLabel><br/>
+				
+				<h:panelGroup>
+				<div class="data-entry-area">
+					<h:selectOneRadio id="bioMarkersRadioId" value="#{customDataBean.bioMarkersType}" onchange="radioToggle1(this, 'customPSSMs', 'customPSSMsDiv');" >
+                        <f:selectItem itemValue="useDreme" itemLabel=" Find new using DREME  " />   
+                        <f:selectItem itemValue="customPSSMs" itemLabel=" Locate specified using PATSER " />
+                    </h:selectOneRadio>
+                    		
+                    <div id="customPSSMsDiv" style="display: #{customDataBean.customPSSMsDivDivVisibility};">		
+						<h:inputTextarea id="pwmSequencesTextArea" value="#{customDataBean.pwms}" styleClass="text-entry-area" rows="10" 
+									 required="false" />
 					</div>
-
-				</h:panelGroup>
-				
-				
-				
-				<h:panelGroup>		
-					<br/><br/>
-					<h:outputLabel value="Biological markers (PWMs): "></h:outputLabel><br/>
-					<h:inputTextarea id="pwmSequencesTextArea" value="#{customDataBean.pwms}" style="width: 720px" rows="10" 
-									 required="true" />
+				</div>
 				</h:panelGroup>
 			
 			
@@ -155,14 +234,14 @@
 	
 					<h:panelGroup>				
 					<form method="post" action="">
-						<textarea name="theory" style="width: 720px" rows="20" readonly="readonly">
+						<textarea name="theory" class="text-entry-area" rows="20" readonly="readonly">
 								<h:outputText value="#{customDataBean.theory}"></h:outputText>
 						</textarea><br/>				
 					</form>
 					</h:panelGroup>
 			
 					<h:panelGroup>	
-						<p style="text-align: left; background-color: #C3FDB8">
+						<p class="info-message">
 						<b>How to read the theory </b>
 						<br/><br/>
 						The theory consists of several rules that describe positive examples. You can see how "strong" the rule is by the number of 
@@ -192,7 +271,7 @@
 
 	<h:panelGroup rendered="#{navigationBean.cElegansData==true}">
 	
-	<p style="text-align: left; background-color: #C3FDB8">
+	<p class="info-message">
 				Data were extracted from the article: Zhao G., Schriefer L., Stormo G. <i>Identification of muscle-specific regulatory modules in 
 				Caenorhabditis elegans.</i> <b>Genome Research</b>, 17: 348-357, 2007.
 	</p>
@@ -203,8 +282,8 @@
 		
 			<h:panelGroup>
 				<br/>
-				<h:outputLabel for="cElPosSeqTextId" value="Positive sequences: "></h:outputLabel><br/>
-				<h:inputTextarea id="cElPosSeqTextId" value="#{celegansDataBean.posSequences}" style="width: 720px" rows="10" readonly="true" />
+				<h:outputLabel for="cElPosSeqTextId" value="Positive sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
+				<h:inputTextarea id="cElPosSeqTextId" value="#{celegansDataBean.posSequences}" styleClass="text-entry-area" rows="10" readonly="true" />
 				<br/>
 			</h:panelGroup>
 		
@@ -212,11 +291,11 @@
 			
 			<h:panelGroup >
 				<br/><br/>
-				<h:outputLabel for="cElNegSeqTextId" value="Negative sequences: "></h:outputLabel><br/>
-				<h:inputTextarea id="cElNegSeqTextId" value="#{celegansDataBean.negSequences}" style="width: 720px" rows="10" readonly="true" />
+				<h:outputLabel for="cElNegSeqTextId" value="Negative sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
+				<h:inputTextarea id="cElNegSeqTextId" value="#{celegansDataBean.negSequences}" styleClass="text-entry-area" rows="10" readonly="true" />
 				
 
-				<p style="text-align: left; vertical-align: top; background-color: #C3FDB8">
+				<p class="info-message">
 					Negative sequences were randomly generated using Markov Chain order 1 model based on the nucleotide composition of the positive sequences. 
 				</p>
 			</h:panelGroup>
@@ -224,8 +303,8 @@
 			
 			<h:panelGroup>	
 				<br/><br/>	
-				<h:outputLabel for="cElPwmTextId" value="Biological markers (PWMs): "></h:outputLabel><br/>
-				<h:inputTextarea id="cElPwmTextId" value="#{celegansDataBean.pwms}" style="width: 720px" rows="10" readonly="true" />
+				<h:outputLabel for="cElPwmTextId" value="Biological markers (PWMs): " styleClass="data-entry-title" ></h:outputLabel><br/>
+				<h:inputTextarea id="cElPwmTextId" value="#{celegansDataBean.pwms}" styleClass="text-entry-area" rows="10" readonly="true" />
 				<br/>
 			</h:panelGroup>
 		
@@ -246,11 +325,11 @@
 			<h:panelGrid columns="1">
 
 				<h:panelGroup>		
-				<h:inputTextarea id="cElTheoryTextId" value="#{celegansDataBean.theory}" style="width: 720px" rows="20" readonly="true" />
+				<h:inputTextarea id="cElTheoryTextId" value="#{celegansDataBean.theory}" styleClass="text-entry-area" rows="20" readonly="true" />
 				</h:panelGroup>
 		
 				<h:panelGroup>	
-					<p style=" text-align: left; background-color: #C3FDB8">
+					<p class="info-message">
 					<b>How to read the theory </b>
 					<br/><br/>
 					The theory consists of several rules that describe positive examples. You can see how "strong" the rule is by the number of 
@@ -277,7 +356,7 @@
 	
 	</div>
 	
-	</div>
+
 
 </f:view>
 
