@@ -176,9 +176,9 @@ public class CustomDataBean {
 		
 		theoryInduced = true;
 		
-		return "";
+		return "";  // stay on the same page
 //		return "confirm";   //go here when the daemon is ready
-//		return "work/result";
+//		return "work/result.html";
 	}
 	
 	
