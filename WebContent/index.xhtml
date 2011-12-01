@@ -36,6 +36,11 @@
 			font-size: 9pt;
 		}
 		
+		.extra-help {
+			text-align: right;
+			align: right;
+		}
+		
 		.data-entry-title {
 			font-size: 12pt;
 		}
@@ -127,17 +132,6 @@
 	
 	<div>
 	
-	<h:form id="dataSelectForm" >
-		<h:outputLabel for="selectDataId" value="Select the kind of data you want to work with:  "></h:outputLabel>
-		<h:selectOneMenu id="selectDataId" value="#{navigationBean.selectedData}">
-			<f:selectItem itemValue="default" itemLabel=" -- "/>
-			<f:selectItem itemValue="Celegans" itemLabel="Example C.elegans data"/>
-			<f:selectItem itemValue="custom" itemLabel="Custom data"/>
-		</h:selectOneMenu>
-		&nbsp;
-		<h:commandButton action="#{navigationBean.loadData}" styleClass="background-color: #348017" value=" Next >> "></h:commandButton>
-	</h:form>
-	
 	
 	<br/>
 	
@@ -148,8 +142,10 @@
 	
 	
 	
-	<h:panelGroup rendered="#{navigationBean.customData==true}">
+	<h:panelGroup>
 	
+		
+			
 		<p class="info-message"> This version of Module Inducer is a 
 		demonstration system, therefore the number and length of the input sequences is restricted to 150 and 3000 nt 
 		respectively. The number of regulatory elements is restricted to 15. If you have any question or would like to 
@@ -158,7 +154,11 @@
 		
 		<h:form id="customDataFormId" name="customDataForm">
 		
-		
+		<div class="extra-help">
+				<h:commandButton action="#{customDataBean.loadCelegansData}" styleClass="background-color: #348017" value=" Fill in example data "></h:commandButton>
+				<h:commandButton action="#{customDataBean.clearData}" styleClass="background-color: #348017" value=" Clear "></h:commandButton>
+		</div>	
+			
 		<h:panelGrid columns="1">
 			
 				<h:outputLabel for="positiveSequencesTextArea" value="Positive sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
@@ -219,10 +219,10 @@
 			<h:commandButton action="#{customDataBean.induceTheory}" value=" Induce Theory >> "></h:commandButton>
 			
 			<br/><br/>
-			<h:commandButton action="#{customDataBean.loadCelegansData}" styleClass="background-color: #348017" value=" Fill in example data "></h:commandButton>
-			<h:commandButton action="#{customDataBean.clearData}" styleClass="background-color: #348017" value=" Clear "></h:commandButton>
-			
-			<br/><br/>
+			<div class="extra-help">
+				<h:commandButton action="#{customDataBean.loadCelegansData}" styleClass="background-color: #348017" value=" Fill in example data "></h:commandButton>
+				<h:commandButton action="#{customDataBean.clearData}" styleClass="background-color: #348017" value=" Clear "></h:commandButton>
+			</div>	
 			
 		</h:form>
 		
@@ -267,91 +267,6 @@
 	</h:panelGroup>
 
 
-
-
-	<h:panelGroup rendered="#{navigationBean.cElegansData==true}">
-	
-	<p class="info-message">
-				Data were extracted from the article: Zhao G., Schriefer L., Stormo G. <i>Identification of muscle-specific regulatory modules in 
-				Caenorhabditis elegans.</i> <b>Genome Research</b>, 17: 348-357, 2007.
-	</p>
-			
-	<h:form id="celegansForm">
-		
-		<h:panelGrid columns="1">
-		
-			<h:panelGroup>
-				<br/>
-				<h:outputLabel for="cElPosSeqTextId" value="Positive sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
-				<h:inputTextarea id="cElPosSeqTextId" value="#{celegansDataBean.posSequences}" styleClass="text-entry-area" rows="10" readonly="true" />
-				<br/>
-			</h:panelGroup>
-		
-			
-			
-			<h:panelGroup >
-				<br/><br/>
-				<h:outputLabel for="cElNegSeqTextId" value="Negative sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
-				<h:inputTextarea id="cElNegSeqTextId" value="#{celegansDataBean.negSequences}" styleClass="text-entry-area" rows="10" readonly="true" />
-				
-
-				<p class="info-message">
-					Negative sequences were randomly generated using Markov Chain order 1 model based on the nucleotide composition of the positive sequences. 
-				</p>
-			</h:panelGroup>
-			
-			
-			<h:panelGroup>	
-				<br/><br/>	
-				<h:outputLabel for="cElPwmTextId" value="Biological markers (PWMs): " styleClass="data-entry-title" ></h:outputLabel><br/>
-				<h:inputTextarea id="cElPwmTextId" value="#{celegansDataBean.pwms}" styleClass="text-entry-area" rows="10" readonly="true" />
-				<br/>
-			</h:panelGroup>
-		
-	
-		</h:panelGrid>
-		
-		<br/><br/>
-		<h:commandButton action="#{celegansDataBean.induceTheory}" value=" Induce Theory >> "></h:commandButton>
-		<br/><br/>
-		
-	</h:form>
-
-	
-		<h:panelGroup rendered="#{celegansDataBean.theoryInduced==true}">
-			
-			<h3> Resulting theory: </h3>
-
-			<h:panelGrid columns="1">
-
-				<h:panelGroup>		
-				<h:inputTextarea id="cElTheoryTextId" value="#{celegansDataBean.theory}" styleClass="text-entry-area" rows="20" readonly="true" />
-				</h:panelGroup>
-		
-				<h:panelGroup>	
-					<p class="info-message">
-					<b>How to read the theory </b>
-					<br/><br/>
-					The theory consists of several rules that describe positive examples. You can see how "strong" the rule is by the number of 
-					positive and negative examples covered ([Pos cover = 12 Neg cover = 0]). In ideal case, when one rule describes all the data,
-					then the positive cover will be the total number of positive sequences (in this case 16) and the negative cover will be 0.
-					<br/><br/>
-					Example of reading a rule.
-					<i><br/><br/>&nbsp;&nbsp;has_crm(A) :-<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;has_tfbs(A,m2), before(m7,m12,A).<br/><br/></i>
-					Sequence A has cis-regulatory module if it has a transcription factor binding site (TFBS) m2 AND TFBS m7 is before m12.
-					<br/><br/>
-						<b>Description of possible theory rules:</b>
-						<br/>&nbsp;&nbsp;<i>has_tfbs(A,m1)</i> - regulatory element m1 is located in A sequences
-						<br/>&nbsp;&nbsp;<i>before(m1, m2, A)</i> - regulatory element m1 is located before m2 in A sequences
-						<br/>&nbsp;&nbsp;<i>distance(m1, m2, A, 10)</i> - the distance between regulatory element m1 and m2 is exactly 10 nucleotides in A sequences
-						<br/>&nbsp;&nbsp;<i>distance_interval(m1, m2, A, 10, 2)</i> - the distance between regulatory element m1 and m2 is 10 nucleotides in A sequences
-					</p>
-				</h:panelGroup>
-	
-			</h:panelGrid>
-		</h:panelGroup>
-	
-	</h:panelGroup>
 	
 	
 	</div>
