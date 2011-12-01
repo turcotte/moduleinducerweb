@@ -102,6 +102,7 @@ public class CustomDataBean {
 	}
 	
 	public String induceTheory(){
+		String nextPage = ""; //page to go to next; empty string will make it stay on the same
 		theoryInduced = false;
 		String theoryOutputDir = "";
 		
@@ -118,8 +119,9 @@ public class CustomDataBean {
 			
 			
 			int lenToRemove = theoryOutputDir.indexOf(SystemVariables.getInstance().getString("job.tmp.output.dir.prefix"));
-			workPath = "work/" + theoryOutputDir.substring(lenToRemove);
-			 
+			//workPath = "work/" + theoryOutputDir.substring(lenToRemove);
+			workPath = "" + theoryOutputDir.substring(lenToRemove);
+			  
 
 			CustomDataRegRegionService customRegRegService;
 			/************ Positive Sequences ****/
@@ -204,9 +206,17 @@ public class CustomDataBean {
 		
 		theoryInduced = true;
 		
-		return "";  // stay on the same page
-//		return "confirm";   //go here when the daemon is ready
-//		return "work/result.html";
+//		nextPage= "";  // stay on the same page
+		return "confirm";   //go here when the daemon is ready
+//		return workPath + "result.html";
+//		return theoryOutputDir+"/result.html";
+		
+		
+//		nextPage = workPath + "result.html";
+		
+//		FacesContext.getCurrentInstance().getExternalContext().dispatch("result.html");
+//		FacesContext.getCurrentInstance().getExternalContext().redirect("work/result.html");
+
 	}
 	
 	
