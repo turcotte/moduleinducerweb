@@ -138,6 +138,7 @@
 		<h:commandButton action="#{navigationBean.loadData}" styleClass="background-color: #348017" value=" Next >> "></h:commandButton>
 	</h:form>
 	
+	
 	<br/>
 	
 	<div style="text-align: left; background-color: #FFF380">
@@ -216,8 +217,12 @@
 			
 			<br/><br/>
 			<h:commandButton action="#{customDataBean.induceTheory}" value=" Induce Theory >> "></h:commandButton>
+			
 			<br/><br/>
-	
+			<h:commandButton action="#{customDataBean.loadCelegansData}" styleClass="background-color: #348017" value=" Fill in example data "></h:commandButton>
+			<h:commandButton action="#{customDataBean.clearData}" styleClass="background-color: #348017" value=" Clear "></h:commandButton>
+			
+			<br/><br/>
 			
 		</h:form>
 		

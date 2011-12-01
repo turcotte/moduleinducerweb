@@ -1,7 +1,9 @@
 package ca.uottawa.okorol.bioinf.ModuleInducerWeb.model;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -11,9 +13,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
+import ca.uottawa.okorol.bioinf.ModuleInducer.data.RegulatoryElementPWM;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.interfaces.RegulatoryElementService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
+import ca.uottawa.okorol.bioinf.ModuleInducer.services.CElegansRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.CustomDataRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Explorer;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.MemeSuiteRegElementService;
@@ -42,36 +46,60 @@ public class CustomDataBean {
 	private static String BIO_MARKERS_SHOW_RADIO_VALUE = "customPSSMs";
 	
 
-
-	public String getNegSpecDivVisibility() {
-		String visibility = "block";
-		if ("posOnly".equals(negExType)){
-			visibility = "none";
-		}
-		return visibility;
-	}
-	
-	public String getPosOnlyDivVisibility() {
-		String visibility = "none";
-		if ("posOnly".equals(negExType)){
-			visibility = "block";
-		}
-		return visibility;
-	}
-	
-
 	//data
 	private String theory;
 	private String posSequences;
 	private String negSequences;
 	private String pwms;
-	
 	private String workPath;
+	
+	//Sample C.elegans data
+	private String cElPosSeqs; 
+	private String cElNegSeqs; 
+	private String cElPwms; 
 	
 //	private UploadedFile posFile;
 //	private UploadedFile negFile;
 //	private UploadedFile pwmFile;
 	
+	
+	
+	public CustomDataBean(){
+		//initialize example data
+		try {
+			
+			CElegansRegRegionService regRegionService = new CElegansRegRegionService(1);
+			
+			File pwmDir = new File(SystemVariables.getInstance().getString("C.elegans.PWMs.dir"));
+			PatserRegElementService patserRegElService = new PatserRegElementService(pwmDir, "");
+		
+			
+			cElPosSeqs = formatSequences(regRegionService.getPositiveRegulatoryRegions());
+			cElNegSeqs = formatSequences(regRegionService.getNegativeRegulatoryRegions());
+			cElPwms = formatPwms(patserRegElService.getRegulatoryElementsPWMs());
+			
+			//TODO: for testing
+//			posSequences = cElPosSeqs;
+//			negSequences = cElNegSeqs;
+//			pwms = cElPwms;
+			
+			
+			
+		}catch (DataFormatException e) {
+			
+			//FileHandling.deleteDirectory(theoryOutputDir);
+			FacesMessage message = new FacesMessage();
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			message.setSummary(e.getMessage());
+			message.setDetail(e.getMessage());
+			FacesContext.getCurrentInstance().addMessage("Unable to load example data.", message);			
+			
+			e.printStackTrace();
+			
+			
+		}
+		
+	}
 	
 	public String induceTheory(){
 		theoryInduced = false;
@@ -182,6 +210,37 @@ public class CustomDataBean {
 	}
 	
 	
+	public String loadCelegansData(){
+		theoryInduced = false;
+		negExType = NEG_EX_SHOW_RADIO_VALUE;
+		bioMarkersType = BIO_MARKERS_SHOW_RADIO_VALUE;
+		customNegExDivVisibility = getCustomNegExDivVisibility();
+		customPSSMsDivDivVisibility = getCustomPSSMsDivDivVisibility();
+
+		theory = "";
+		posSequences = cElPosSeqs;
+		negSequences = cElNegSeqs;
+		pwms = cElPwms;
+		
+		return "";
+		
+	}
+	
+	
+	public String clearData(){
+		theory = "";
+		posSequences = "";
+		negSequences = "";
+		pwms = "";
+		
+		theoryInduced = false;
+		negExType = NEG_EX_SHOW_RADIO_VALUE;
+		bioMarkersType = "useDreme";
+		customNegExDivVisibility = getCustomNegExDivVisibility();
+		customPSSMsDivDivVisibility = getCustomPSSMsDivDivVisibility();
+		
+		return "";
+	}
 	
 	
 	
@@ -242,6 +301,32 @@ public class CustomDataBean {
 	}
 	
 	
+	/*********** Helper methods *************/
+	private String formatSequences(ArrayList<Feature> regulatoryRegions){
+		String sequences = "";
+		
+		for (Iterator<Feature> iterator = regulatoryRegions.iterator(); iterator.hasNext();) {
+			Feature regRegion = (Feature) iterator.next();
+			sequences = sequences + "\n> " + regRegion.getId() + "\n" + regRegion.getSequence().toUpperCase() + "\n";
+			
+		}
+		
+		return sequences;
+	}
+	
+	private String formatPwms(ArrayList<RegulatoryElementPWM> pwms){
+		String pwmSeq = "";
+		
+		for (Iterator<RegulatoryElementPWM> iterator = pwms.iterator(); iterator.hasNext();) {
+			RegulatoryElementPWM pwmEl = (RegulatoryElementPWM) iterator.next();
+			
+			pwmSeq = pwmSeq + "\n> " + pwmEl.getName()+ "\n" + pwmEl.getPwmString() + "\n";
+			
+		}
+		
+		return pwmSeq;
+	}
+	
 	/***********  Getters/setters   ***********/
 
 	public String getPosSequences() {
@@ -300,6 +385,14 @@ public class CustomDataBean {
 		return HIDE;
 	}
 
+	public boolean getTheoryInduced(){
+		return theoryInduced;
+	}
+	
+	public String getWorkPath() {
+		return workPath;
+	}
+
 
 
 	
@@ -324,14 +417,25 @@ public class CustomDataBean {
 //		this.pwmFile = pwmFile;
 //	}
 	
-	public boolean getTheoryInduced(){
-		return theoryInduced;
-	}
 	
-	public String getWorkPath() {
-		return workPath;
-	}
-
+//	public String getNegSpecDivVisibility() {
+//		String visibility = "block";
+//		if ("posOnly".equals(negExType)){
+//			visibility = "none";
+//		}
+//		return visibility;
+//	}
+//	
+//	public String getPosOnlyDivVisibility() {
+//		String visibility = "none";
+//		if ("posOnly".equals(negExType)){
+//			visibility = "block";
+//		}
+//		return visibility;
+//	}
+	
+	
+	
 	
 	
 }
