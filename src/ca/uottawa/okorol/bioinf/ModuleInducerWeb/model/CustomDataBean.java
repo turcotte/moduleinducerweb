@@ -12,6 +12,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
+import com.sun.faces.config.FacesConfigInfo;
+
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.RegulatoryElementPWM;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
@@ -65,7 +67,13 @@ public class CustomDataBean {
 	
 	
 	public CustomDataBean(){
-		//initialize example data
+		
+
+		System.out.println("The index.xhtml is running at this location: " 
+				+ FacesContext.getCurrentInstance().getExternalContext().getRealPath(""));
+		
+		
+		//initialize example data		
 		try {
 			
 			CElegansRegRegionService regRegionService = new CElegansRegRegionService(1);
@@ -101,7 +109,7 @@ public class CustomDataBean {
 		
 	}
 	
-	public String induceTheory(){
+	public String induceTheory() throws IOException{
 		String nextPage = ""; //page to go to next; empty string will make it stay on the same
 		theoryInduced = false;
 		String theoryOutputDir = "";
@@ -119,8 +127,8 @@ public class CustomDataBean {
 			
 			
 			int lenToRemove = theoryOutputDir.indexOf(SystemVariables.getInstance().getString("job.tmp.output.dir.prefix"));
-			//workPath = "work/" + theoryOutputDir.substring(lenToRemove);
-			workPath = "" + theoryOutputDir.substring(lenToRemove);
+			workPath = "work/" + theoryOutputDir.substring(lenToRemove);
+			//workPath = "" + theoryOutputDir.substring(lenToRemove);
 			  
 
 			CustomDataRegRegionService customRegRegService;
@@ -164,7 +172,6 @@ public class CustomDataBean {
 				regElService = new MemeSuiteRegElementService(theoryOutputDir);
 				
 			}
-			//PatserRegElementService patserRegElService = new PatserRegElementService(pwms, theoryOutputDir);
 			
 			/************ Find and load up everything (sequences, biomarkers) ****/
 			Explorer explorer = new Explorer(customRegRegService, regElService, theoryOutputDir);
@@ -188,6 +195,7 @@ public class CustomDataBean {
 			e.printStackTrace();
 			
 			return ""; //stay on the same page
+//			FacesContext.getCurrentInstance().getExternalContext().dispatch("");
 			
 		} catch (IOException e) {
 			
@@ -202,20 +210,27 @@ public class CustomDataBean {
 			e.printStackTrace();
 			
 			return ""; //stay on the same page
+//			FacesContext.getCurrentInstance().getExternalContext().dispatch("");
 		}
 		
 		theoryInduced = true;
 		
+		
 //		nextPage= "";  // stay on the same page
-		return "confirm";   //go here when the daemon is ready
-//		return workPath + "result.html";
-//		return theoryOutputDir+"/result.html";
+//		return "confirm";   //go here when the daemon is ready
+		
+		String resultPath =  workPath + "index.html";
+		System.out.println("Trying to forward result to this location: " + resultPath);
+//		return resultPath;
+
 		
 		
 //		nextPage = workPath + "result.html";
 		
 //		FacesContext.getCurrentInstance().getExternalContext().dispatch("result.html");
-//		FacesContext.getCurrentInstance().getExternalContext().redirect("work/result.html");
+		FacesContext.getCurrentInstance().getExternalContext().redirect(resultPath);
+		
+		return "";
 
 	}
 	
