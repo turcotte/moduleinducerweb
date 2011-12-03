@@ -178,7 +178,7 @@ public class CustomDataBean {
 			
 			/************ Create ilp files and induce ****/
 			String completeOutput = explorer.induceRules();
-			theory = DataFormatter.extractTheoryAndPerformance(completeOutput);
+			//theory = DataFormatter.extractTheoryAndPerformance(completeOutput);
 			
 			//FileHandling.deleteDirectory(new File(tmpPwmDirName));  /should be done by a script
 		
