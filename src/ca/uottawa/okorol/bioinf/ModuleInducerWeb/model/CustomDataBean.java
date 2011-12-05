@@ -53,7 +53,6 @@ public class CustomDataBean {
 	private String posSequences;
 	private String negSequences;
 	private String pwms;
-	private String workPath;
 	
 	//Sample C.elegans data
 	private String cElPosSeqs; 
@@ -110,9 +109,11 @@ public class CustomDataBean {
 	}
 	
 	public String induceTheory() throws IOException{
-		String nextPage = ""; //page to go to next; empty string will make it stay on the same
-		theoryInduced = false;
+
+//		theoryInduced = false;
+		
 		String theoryOutputDir = "";
+		String resultPage = "";
 		
 		try {
 
@@ -125,11 +126,12 @@ public class CustomDataBean {
 			System.out.println("Writing new job to directory: " + theoryOutputDir);
 			//FileHandling.writeLogFile("sysInfo.txt", "\n All vars: \n\n" + prop.toString() + "\n\n Deploy dir: " + deployDir);
 			
-			
 			int lenToRemove = theoryOutputDir.indexOf(SystemVariables.getInstance().getString("job.tmp.output.dir.prefix"));
-			workPath = "work/" + theoryOutputDir.substring(lenToRemove);
-			//workPath = "" + theoryOutputDir.substring(lenToRemove);
-			  
+			String theoryOutputDirName =  theoryOutputDir.substring(lenToRemove);
+			
+			resultPage = "work/" + theoryOutputDirName + FileHandling.createPreliminaryResultsWebPage(theoryOutputDir);
+			
+			
 
 			CustomDataRegRegionService customRegRegService;
 			/************ Positive Sequences ****/
@@ -177,7 +179,12 @@ public class CustomDataBean {
 			Explorer explorer = new Explorer(customRegRegService, regElService, theoryOutputDir);
 			
 			/************ Create ilp files and induce ****/
-			String completeOutput = explorer.induceRules();
+			ILPRunner ilpRunner = new ILPRunner(explorer); 
+			Thread myThread = new Thread(ilpRunner);
+			myThread.start();
+			
+			// *** Old way, with waiting for the results
+			//String completeOutput = explorer.induceRules();
 			//theory = DataFormatter.extractTheoryAndPerformance(completeOutput);
 			
 			//FileHandling.deleteDirectory(new File(tmpPwmDirName));  /should be done by a script
@@ -195,7 +202,6 @@ public class CustomDataBean {
 			e.printStackTrace();
 			
 			return ""; //stay on the same page
-//			FacesContext.getCurrentInstance().getExternalContext().dispatch("");
 			
 		} catch (IOException e) {
 			
@@ -210,25 +216,13 @@ public class CustomDataBean {
 			e.printStackTrace();
 			
 			return ""; //stay on the same page
-//			FacesContext.getCurrentInstance().getExternalContext().dispatch("");
 		}
 		
-		theoryInduced = true;
 		
-		
-//		nextPage= "";  // stay on the same page
-//		return "confirm";   //go here when the daemon is ready
-		
-		String resultPath =  workPath + "index.html";
-		System.out.println("Trying to forward result to this location: " + resultPath);
-//		return resultPath;
+//		String resultPath =  workPath + "index.html";
+//		System.out.println("Trying to forward result to this location: " + resultPath);
 
-		
-		
-//		nextPage = workPath + "result.html";
-		
-//		FacesContext.getCurrentInstance().getExternalContext().dispatch("result.html");
-		FacesContext.getCurrentInstance().getExternalContext().redirect(resultPath);
+		FacesContext.getCurrentInstance().getExternalContext().redirect(resultPage);
 		
 		return "";
 
@@ -269,7 +263,26 @@ public class CustomDataBean {
 	
 	
 	
+	/***********  Thread class   ***********/
 
+	
+	class ILPRunner implements Runnable{
+		private Explorer explorer;
+		
+		public ILPRunner(Explorer explorer){
+			this.explorer = explorer;
+		}
+		
+		public void run(){
+			try {
+				explorer.induceRules();
+			} catch (DataFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
 
 
 	/***********  Validators   ***********/
@@ -413,53 +426,6 @@ public class CustomDataBean {
 	public boolean getTheoryInduced(){
 		return theoryInduced;
 	}
-	
-	public String getWorkPath() {
-		return workPath;
-	}
-
-
-
-	
-//	public UploadedFile getPosFile() {
-//		return posFile;
-//	}
-//	public void setPosFile(UploadedFile posFile) {
-//		this.posFile = posFile;
-//	}
-//	
-//	public UploadedFile getNegFile() {
-//		return negFile;
-//	}
-//	public void setNegFile(UploadedFile negFile) {
-//		this.negFile = negFile;
-//	}
-//	
-//	public UploadedFile getPwmFile() {
-//		return pwmFile;
-//	}
-//	public void setPwmFile(UploadedFile pwmFile) {
-//		this.pwmFile = pwmFile;
-//	}
-	
-	
-//	public String getNegSpecDivVisibility() {
-//		String visibility = "block";
-//		if ("posOnly".equals(negExType)){
-//			visibility = "none";
-//		}
-//		return visibility;
-//	}
-//	
-//	public String getPosOnlyDivVisibility() {
-//		String visibility = "none";
-//		if ("posOnly".equals(negExType)){
-//			visibility = "block";
-//		}
-//		return visibility;
-//	}
-	
-	
 	
 	
 	
