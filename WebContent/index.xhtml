@@ -8,32 +8,53 @@
 <h:head>
 	<title>Module Inducer</title>
 	
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/nihilo/nihilo.css"/>
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/claro/claro.css"/>
+	
 	<style> 
     <!--
 		* { 
-		    
 		    font-family: Verdana, Geneva, sans-serif; 
-		    font-size: 10pt; 
+		    font-size: 9pt; 
 		}
 		
 		.main {
-			width: 770px;
+			width: 700px;
 		    margin: 25px 25px 25px 25px; 
-		    font-size: 10pt;
 		}
 		
 		.title{
 			font-size: 13pt;
+			font-weight:bold;
 		}
 		
 		.header {
+			background-color: white;
+			padding: 10px;
+			margin: 10px;
+			border-style:solid; 
+			border-width:2px; 
+			border-color: #348017;  
+			text-align: center; 
+		}
+		
+		.mi_body {
+			background-color: white;
+			padding: 10px;
+			margin: 10px;
 			border-style:solid; 
 			border-width:1px; 
-			border-color: #348017;  
+			border-color: #348017; 
+		}
+		
+		.mi_footer{
+			background-color: white;
 			padding: 10px;
-			margin: 0px;
-			text-align: center; 
-			font-size: 9pt;
+			margin: 10px;
+			border-style:solid; 
+			border-width:1px; 
+			border-color: #348017; 
+			text-align: center;
 		}
 		
 		.extra-help {
@@ -42,7 +63,8 @@
 		}
 		
 		.data-entry-title {
-			font-size: 12pt;
+			font-size: 11pt;
+			font-weight:bold;
 		}
 		
 		.data-entry-area {
@@ -58,9 +80,15 @@
 		}
 		
 		.text-entry-area {
-			width: 720px;
+			width: 550px;
 			padding: 0;
 			margin: 0;
+			font-size: 6pt;
+		}
+		
+		.help-header-text{
+			color:#FF9900;
+			font-weight:bold;
 		}
 		
     -->
@@ -77,9 +105,14 @@
 	<h:outputStylesheet library="css" name="/css/mi_style.css"  /> - placed in body
 	-->
 	
-	
+	<script src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js" data-dojo-config="parseOnLoad:true"></script>
 	<script language="javascript">
     <!--
+ 		// Load the Tooltip widget class
+   		dojo.require("dijit.Tooltip");
+    	dojo.ready(function(){         
+			//All code that manipulates the DOM must wait until the DOM is ready before it can be executed.
+        });
     
     // If a specific value (expectedRadioValue) of a radiobutton (radioEL) is selected,
     // then display an element with a specified id (elementToDisplay).
@@ -88,8 +121,10 @@
     	var displayState;
     	
     	if (radioEL.value == expectedRadioValue){
+    		//dojo.fadeIn({ node: elementToDisplay }).play();
     		displayState = 'block';
     	} else {
+			//dojo.fadeOut({ node: elementToDisplay }).play();
     		displayState = 'none'; 
     	}
     	
@@ -116,7 +151,7 @@
 
 </h:head>
 
-<h:body>
+<h:body styleClass="nihilo" style="background-color: #F8F8F8;">
 
 
 <div class="main">
@@ -124,16 +159,14 @@
 <f:view>
 
 	<div class="header">
-		<div class="title">ModuleInducer</div>
-		Extract patterns from biological data.
+		<div class="title">ModuleInducer :: </div>
+		:: Extract patterns from biological data.
 	</div>
 	<br/>
 
 	
-	<div>
-	
-	
-	<br/>
+	<div class="mi_body">
+		
 	
 	<div style="text-align: left; background-color: #FFF380">
 	<h:messages />	
@@ -158,12 +191,29 @@
 				<h:commandButton action="#{customDataBean.loadCelegansData}" styleClass="background-color: #348017" value=" Fill in example data "></h:commandButton>
 				<h:commandButton action="#{customDataBean.clearData}" styleClass="background-color: #348017" value=" Clear "></h:commandButton>
 		</div>	
-			
-		<h:panelGrid columns="1">
-			
-				<h:outputLabel for="positiveSequencesTextArea" value="Experiment sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
 
+		<h:panelGrid columns="1">
+			<h:panelGroup>
+				<h:outputLabel for="positiveSequencesTextArea" value="Experiment sequences: " styleClass="data-entry-title" ></h:outputLabel>
+				<button id="help_ExperimentSeqBtn" onmouseover="dijit.Tooltip.defaultPosition=['after']" >
+					<font class="help-header-text">?</font>
+				</button>
+				<div class="dijitHidden">
+					<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_ExperimentSeqBtn'">
+						<font class="help-header-text">Experiment sequences</font> <br/>
+						<p>
+						A set of related DNA sequences, which will be analyzed. <br/>
+						For instance, regions surrounding a binding site of some <br/>
+						transcription factor; samples taken from cancer patients.
+						</p>
+						Should be in the FASTA format	
+					</span>
+				</div>
+			</h:panelGroup>
+				
+				<br/>
 				<h:panelGroup>
+				
 				<div class="data-entry-area">
 				 
 				 	<h:inputTextarea id="positiveSequencesTextArea" value="#{customDataBean.posSequences}" styleClass="text-entry-area" rows="10" 
@@ -173,9 +223,29 @@
 				</h:panelGroup>
 			 
 			 
+			<h:panelGroup>	
+                <h:outputLabel value="Control sequences: " styleClass="data-entry-title" ></h:outputLabel>
+				<button id="help_ControlSeqBtn" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
+				<div class="dijitHidden">
+					<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_ControlSeqBtn'">
+						<font class="help-header-text">Control sequences</font> <br/>
+						<p>
+						A set of related DNA sequences, which contrast experiment sequences. <br/>
+						For instance, regions surrounding a binding site of some transcription <br/>
+						factor; samples taken from healthy patients.<br/>
+						</p>
+						Sequences can be either:<ul>
+						<li>specified in Fasta format (recommended for best results); </li>
+						<li>generated with the same nucleotide composition, as the experiment <br/>sequences;</li>
+						<li>generated from experiment sequences using Markov chain model of <br/>
+							order 1 (the probability of an occurrence of a nucleotide depends <br/>
+							on one previously occurred nucleotide ). </li>
+						</ul>
+					</span>
+				</div>
+			</h:panelGroup>
 				
-                <h:outputLabel value="Control sequences: " styleClass="data-entry-title" ></h:outputLabel><br/>
-				
+				<br/>
 				<h:panelGroup>    
 				
 				<div class="data-entry-area">
@@ -194,8 +264,24 @@
                 </h:panelGroup>
                
                 
-				
-				<h:outputLabel value="Biological markers: " styleClass="data-entry-title"></h:outputLabel><br/>
+			<h:panelGroup>	
+				<h:outputLabel value="Biological markers: " styleClass="data-entry-title"></h:outputLabel>
+				<button id="help_BioMarkersBtn" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
+				<div class="dijitHidden">
+					<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_BioMarkersBtn'">
+						<font class="help-header-text">Biological markers</font> <br/>
+						<p>
+						Transcription factor binding sites or any other over-represented motifs, <br/>
+						found in experiment sequences.
+						</p>
+						Biological markers can be either:<ul>
+						<li>discovered using DREME;</li>
+						<li>supplied as PSSMs in a FASTA-like format (see example data for<br/>details).</li>
+						</ul>
+						
+					</span>
+				</div>
+			</h:panelGroup>
 				
 				<h:panelGroup>
 				<div class="data-entry-area">
@@ -210,12 +296,11 @@
 					</div>
 				</div>
 				</h:panelGroup>
-			
-			
+
 		
 			</h:panelGrid>
 			
-			<br/><br/>
+			<br/>
 			<h:commandButton action="#{customDataBean.induceTheory}" value=" Induce Theory >> "></h:commandButton>
 			
 			<br/><br/>
@@ -263,14 +348,17 @@
 		
 	</h:panelGroup>
 
-
-	
 	
 	</div>
 	
-
-
 </f:view>
+
+	<div class="mi_footer">
+		
+				<strong>Questions and suggestions:</strong> <a href="mailto:module.inducer@site.uottawa.ca">module.inducer@site.uottawa.ca</a> <br/>
+				<strong>Last updated:</strong> December 6, 2011
+	
+	</div>
 
 </div>
 
