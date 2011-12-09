@@ -79,6 +79,11 @@
 			/*vertical-align: top;*/ 
 		}
 		
+		.error-message {
+			text-align: left; 
+			background-color: #FFF380
+		}
+		
 		.text-entry-area {
 			width: 550px;
 			padding: 0;
@@ -168,7 +173,7 @@
 	<div class="mi_body">
 		
 	
-	<div style="text-align: left; background-color: #FFF380">
+	<div class="error-message">
 	<h:messages />	
 	</div>
 	
@@ -221,7 +226,6 @@
 				 
 				</div>
 				</h:panelGroup>
-			 
 			 
 			<h:panelGroup>	
                 <h:outputLabel value="Control sequences: " styleClass="data-entry-title" ></h:outputLabel>
@@ -296,7 +300,6 @@
 					</div>
 				</div>
 				</h:panelGroup>
-
 		
 			</h:panelGrid>
 			
@@ -308,42 +311,6 @@
 			
 		</h:form>
 		
-		<h:panelGroup rendered="#{customDataBean.theoryInduced==true}">
-				
-				<h3> Resulting theory: </h3>
-	
-				<h:panelGrid columns="1">
-	
-					<h:panelGroup>				
-					<form method="post" action="">
-						<textarea name="theory" class="text-entry-area" rows="20" readonly="readonly">
-								<h:outputText value="#{customDataBean.theory}"></h:outputText>
-						</textarea><br/>				
-					</form>
-					</h:panelGroup>
-			
-					<h:panelGroup>	
-						<p class="info-message">
-						<b>How to read the theory </b>
-						<br/><br/>
-						The theory consists of several rules that describe positive examples. You can see how "strong" the rule is by the number of 
-						positive and negative examples covered ([Pos cover = 12 Neg cover = 0]). In ideal case, when one rule describes all the data,
-						then the positive cover will be the total number of positive sequences (in this case 16) and the negative cover will be 0.
-						<br/><br/>
-						Example of reading a rule.
-						<br/><br/>&nbsp;&nbsp;has_crm(A) :-<br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;has_tfbs(A,m2), before(m7,m12,A).<br/><br/>
-						Sequence A has cis-regulatory module if it has a transcription factor binding site (TFBS) m2 AND TFBS m7 is before m12.
-						<br/><br/>
-						<b>Description of possible theory rules:</b>
-						<br/>&nbsp;&nbsp;<i>has_tfbs(A,m1)</i> - regulatory element m1 is located in A sequences
-						<br/>&nbsp;&nbsp;<i>before(m1, m2, A)</i> - regulatory element m1 is located before m2 in A sequences
-						<br/>&nbsp;&nbsp;<i>distance(m1, m2, A, 10)</i> - the distance between regulatory element m1 and m2 is exactly 10 nucleotides in A sequences
-						<br/>&nbsp;&nbsp;<i>distance_interval(m1, m2, A, 10, 2)</i> - the distance between regulatory element m1 and m2 is 10 nucleotides in A sequences
-						</p>
-					</h:panelGroup>
-		
-				</h:panelGrid>
-			</h:panelGroup>
 		
 		
 	</h:panelGroup>

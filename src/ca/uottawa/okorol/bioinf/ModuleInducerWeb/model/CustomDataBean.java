@@ -4,6 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -11,8 +16,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
-
-import com.sun.faces.config.FacesConfigInfo;
 
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.RegulatoryElementPWM;
@@ -24,7 +27,6 @@ import ca.uottawa.okorol.bioinf.ModuleInducer.services.CustomDataRegRegionServic
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Explorer;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.MemeSuiteRegElementService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.PatserRegElementService;
-import ca.uottawa.okorol.bioinf.ModuleInducer.tools.DataFormatter;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FeaturesTools;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 
@@ -33,7 +35,6 @@ import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 public class CustomDataBean {
 	
 	//page navigation
-	private boolean theoryInduced = false;
 	private String negExType = NEG_EX_SHOW_RADIO_VALUE;
 	private String bioMarkersType = "useDreme";
 //	private String customNegExDivVisibility = SHOW;
@@ -84,13 +85,7 @@ public class CustomDataBean {
 			cElPosSeqs = formatSequences(regRegionService.getPositiveRegulatoryRegions());
 			cElNegSeqs = formatSequences(regRegionService.getNegativeRegulatoryRegions());
 			cElPwms = formatPwms(patserRegElService.getRegulatoryElementsPWMs());
-			
-			//TODO: for testing
-//			posSequences = cElPosSeqs;
-//			negSequences = cElNegSeqs;
-//			pwms = cElPwms;
-			
-			
+				
 			
 		}catch (DataFormatException e) {
 			
@@ -109,8 +104,6 @@ public class CustomDataBean {
 	}
 	
 	public String induceTheory() throws IOException{
-
-//		theoryInduced = false;
 		
 		String theoryOutputDir = "";
 		String resultPage = "";
@@ -127,9 +120,9 @@ public class CustomDataBean {
 			//FileHandling.writeLogFile("sysInfo.txt", "\n All vars: \n\n" + prop.toString() + "\n\n Deploy dir: " + deployDir);
 			
 			int lenToRemove = theoryOutputDir.indexOf(SystemVariables.getInstance().getString("job.tmp.output.dir.prefix"));
-			String theoryOutputDirName =  theoryOutputDir.substring(lenToRemove);
+			String relativePathToJobDir =  "work/"+ theoryOutputDir.substring(lenToRemove);
 			
-			resultPage = "work/" + theoryOutputDirName + FileHandling.createPreliminaryResultsWebPage(theoryOutputDir);
+			resultPage = relativePathToJobDir + FileHandling.createPreliminaryResultsWebPage(theoryOutputDir);
 			
 			
 
@@ -179,19 +172,42 @@ public class CustomDataBean {
 			Explorer explorer = new Explorer(customRegRegService, regElService, theoryOutputDir);
 			
 			/************ Create ilp files and induce ****/
-			ILPRunner ilpRunner = new ILPRunner(explorer); 
-			Thread myThread = new Thread(ilpRunner);
-			myThread.start();
+			// Kick off a thread so that the preliminary results page could be displayed
+			ILPCallable ilpCallable = new ILPCallable(explorer, theoryOutputDir);
+			ExecutorService execServ= Executors.newSingleThreadExecutor();
+			Future<String> ilpJob = execServ.submit(ilpCallable);
+
+			/*
+			try {
+				ilpJob.get();
+			} catch (InterruptedException e) {
+				
+				FileHandling.createErrorResultsWebPage(theoryOutputDir, "Internal error.");
+				//FacesContext.getCurrentInstance().getExternalContext().redirect(resultPage);
+				e.printStackTrace();
+				
+			} catch (ExecutionException e) {
+				
+				int splitPos = e.getMessage().indexOf(':') + 2;  
+				// remove "ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException: " from the message
+				String cleanMessage = e.getMessage().substring(splitPos);
+
+				
+				FileHandling.createErrorResultsWebPage(theoryOutputDir, cleanMessage);
+				//FacesContext.getCurrentInstance().getExternalContext().redirect(resultPage);
+				e.printStackTrace();
+			}
+	*/		
 			
 			// *** Old way, with waiting for the results
-			//String completeOutput = explorer.induceRules();
-			//theory = DataFormatter.extractTheoryAndPerformance(completeOutput);
+//			String completeOutput = explorer.induceRules();
+//			theory = DataFormatter.extractTheoryAndPerformance(completeOutput);
 			
 			//FileHandling.deleteDirectory(new File(tmpPwmDirName));  /should be done by a script
 		
 		}catch (DataFormatException e) {
 			
-			FileHandling.deleteDirectory(theoryOutputDir);
+			//FileHandling.deleteDirectory(theoryOutputDir);
 			
 			FacesMessage message = new FacesMessage();
 			message.setSeverity(FacesMessage.SEVERITY_ERROR);
@@ -205,7 +221,7 @@ public class CustomDataBean {
 			
 		} catch (IOException e) {
 			
-			FileHandling.deleteDirectory(theoryOutputDir);
+			//FileHandling.deleteDirectory(theoryOutputDir);
 			
 			FacesMessage message = new FacesMessage();
 			message.setSeverity(FacesMessage.SEVERITY_ERROR);
@@ -219,9 +235,7 @@ public class CustomDataBean {
 		}
 		
 		
-//		String resultPath =  workPath + "index.html";
-//		System.out.println("Trying to forward result to this location: " + resultPath);
-
+		
 		FacesContext.getCurrentInstance().getExternalContext().redirect(resultPage);
 		
 		return "";
@@ -230,7 +244,6 @@ public class CustomDataBean {
 	
 	
 	public String loadCelegansData(){
-		theoryInduced = false;
 		negExType = NEG_EX_SHOW_RADIO_VALUE;
 		bioMarkersType = BIO_MARKERS_SHOW_RADIO_VALUE;
 		customNegExDivVisibility = getCustomNegExDivVisibility();
@@ -252,7 +265,6 @@ public class CustomDataBean {
 		negSequences = "";
 		pwms = "";
 		
-		theoryInduced = false;
 		negExType = NEG_EX_SHOW_RADIO_VALUE;
 		bioMarkersType = "useDreme";
 		customNegExDivVisibility = getCustomNegExDivVisibility();
@@ -263,24 +275,45 @@ public class CustomDataBean {
 	
 	
 	
-	/***********  Thread class   ***********/
+	/***********  Thread classes   ***********/
 
 	
-	class ILPRunner implements Runnable{
-		private Explorer explorer;
+	class ILPCallable implements Callable<String>{
 		
-		public ILPRunner(Explorer explorer){
+		private Explorer explorer;
+		private String theoryOutputDir;
+		
+		public ILPCallable(Explorer explorer, String theoryOutputDir) {
 			this.explorer = explorer;
+			this.theoryOutputDir = theoryOutputDir;
 		}
 		
-		public void run(){
+		@Override
+		public String call() throws Exception {
+			//explorer.induceRules();
+			
 			try {
 				explorer.induceRules();
+
 			} catch (DataFormatException e) {
-				// TODO Auto-generated catch block
+				
+				int splitPos = e.getMessage().indexOf(':') + 2;  
+				// remove "ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException: " from the message
+				String cleanMessage = e.getMessage().substring(splitPos);
+				
+				
+				FileHandling.createErrorResultsWebPage(theoryOutputDir, cleanMessage);
+				//FacesContext.getCurrentInstance().getExternalContext().redirect(resultPage);
 				e.printStackTrace();
+				
+			} catch (Exception e) {
+				
+				FileHandling.createErrorResultsWebPage(theoryOutputDir, "Internal error.");
+				//FacesContext.getCurrentInstance().getExternalContext().redirect(resultPage);
+				e.printStackTrace();
+				
 			}
-			
+			return "";
 		}
 	}
 
@@ -423,11 +456,7 @@ public class CustomDataBean {
 		return HIDE;
 	}
 
-	public boolean getTheoryInduced(){
-		return theoryInduced;
-	}
-	
-	
+
 	
 }
 
