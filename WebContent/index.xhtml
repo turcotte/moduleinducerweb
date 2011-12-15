@@ -96,6 +96,11 @@
 			font-weight:bold;
 		}
 		
+		.options-input-field {
+			width: 50px;
+			text-align: right;
+		}
+		
     -->
    </style>
    
@@ -249,23 +254,23 @@
 				</div>
 			</h:panelGroup>
 				
-				<br/>
-				<h:panelGroup>    
-				
+			<br/>
+			
+			<h:panelGroup>    
+			
 				<div class="data-entry-area">
-                    <h:selectOneRadio id="negExRadioId" value="#{customDataBean.negExType}" onchange="radioToggle1(this, 'customNegEx', 'customNegExDiv');" >
-                        <f:selectItem itemValue="customNegEx" itemLabel="Custom    " />   
-                        <f:selectItem itemValue="mc0" itemLabel=" Same nucleotide composition   " />
-                        <f:selectItem itemValue="mc1" itemLabel=" Markov chain of order 1 " />
-                    </h:selectOneRadio>
-
+	                   <h:selectOneRadio id="negExRadioId" value="#{customDataBean.negExType}" onchange="radioToggle1(this, 'customNegEx', 'customNegExDiv');" >
+	                       <f:selectItem itemValue="customNegEx" itemLabel="Custom    " />   
+	                       <f:selectItem itemValue="mc0" itemLabel=" Same nucleotide composition   " />
+	                       <f:selectItem itemValue="mc1" itemLabel=" Markov chain of order 1 " />
+	                   </h:selectOneRadio>
+	
 					<div id="customNegExDiv" style="display: #{customDataBean.customNegExDivVisibility};" >
 						<h:inputTextarea id="negativeSequencesTextArea" value="#{customDataBean.negSequences}" styleClass="text-entry-area" rows="10" 
 										 required="false"   />	
 					</div>
-					
 				</div>
-                </h:panelGroup>
+			</h:panelGroup>
                
                 
 			<h:panelGroup>	
@@ -287,30 +292,77 @@
 				</div>
 			</h:panelGroup>
 				
-				<h:panelGroup>
-				<div class="data-entry-area">
-					<h:selectOneRadio id="bioMarkersRadioId" value="#{customDataBean.bioMarkersType}" onchange="radioToggle1(this, 'customPSSMs', 'customPSSMsDiv');" >
-                        <f:selectItem itemValue="useDreme" itemLabel=" Find new using DREME  " />   
-                        <f:selectItem itemValue="customPSSMs" itemLabel=" Locate specified using PATSER " />
-                    </h:selectOneRadio>
-                    		
-                    <div id="customPSSMsDiv" style="display: #{customDataBean.customPSSMsDivDivVisibility};">		
-						<h:inputTextarea id="pwmSequencesTextArea" value="#{customDataBean.pwms}" styleClass="text-entry-area" rows="10" 
-									 required="false" />
-					</div>
+			<h:panelGroup>
+			<div class="data-entry-area">
+				<h:selectOneRadio id="bioMarkersRadioId" value="#{customDataBean.bioMarkersType}" onchange="radioToggle1(this, 'customPSSMs', 'customPSSMsDiv');" >
+					<f:selectItem itemValue="useDreme" itemLabel=" Find new using DREME  " />   
+					<f:selectItem itemValue="customPSSMs" itemLabel=" Locate specified using PATSER " />
+                </h:selectOneRadio>
+                   		
+				<div id="customPSSMsDiv" style="display: #{customDataBean.customPSSMsDivDivVisibility};">		
+					<h:inputTextarea id="pwmSequencesTextArea" value="#{customDataBean.pwms}" styleClass="text-entry-area" rows="10" required="false" />
 				</div>
-				</h:panelGroup>
+				
+			</div>
+			</h:panelGroup>
+			
+			
+			<h:panelGroup>	
+				<h:outputLabel value="Advanced options: " styleClass="data-entry-title"></h:outputLabel>
+			</h:panelGroup>
+				
+			<h:panelGroup>
+			<div class="data-entry-area">
+			
+				<table border="0" width="100%">
+					<tr>
+						<td />
+						<td align="right" width="200px" height="30px"><strong>Experiment sequences</strong></td>
+						<td align="right" width="200px"><strong>Control sequences</strong></td>
+					</tr>
+					<tr>
+						<td>PATSER cut-off score</td>
+						<td align="right"> 
+							<h:inputText label="PATSER cut-off score for experiment sequences" id="posPatserCutoff" value="#{customDataBean.posPatserCutoff}" styleClass="options-input-field" /> 
+						</td>
+						<td align="right"> 
+							<h:inputText label="PATSER cut-off score for control sequences" id="negPatserCutoff" value="#{customDataBean.negPatserCutoff}" styleClass="options-input-field" /> 
+						</td>
+					</tr>
+					<tr>
+						<td>DREME cut-off score</td>
+						<td align="right">
+							<h:inputText label="DREME cut-off score for experiment sequences" id="posDremeCutoff" value="#{customDataBean.posDremeCutoff}" styleClass="options-input-field" />
+						</td>
+						<td align="right">
+							<h:inputText label="DREME cut-off score for control sequences" id="negDremeCutoff" value="#{customDataBean.negDremeCutoff}" styleClass="options-input-field" />
+						</td>
+					</tr>
+					<tr>
+						<td>FIMO cut-off score</td>
+						<td align="right">
+							<h:inputText label="FIMO cut-off score for experiment sequences" id="posFimoCutoff" value="#{customDataBean.posFimoCutoff}" styleClass="options-input-field" />
+						</td>
+						<td align="right">
+							<h:inputText label="FIMO cut-off score for control sequences" id="negFimoCutoff" value="#{customDataBean.negFimoCutoff}" styleClass="options-input-field" />
+						</td>
+					</tr>
+					
+				</table>
+				
+				
+			</div>
+			</h:panelGroup>
 		
-			</h:panelGrid>
+		</h:panelGrid>
 			
-			<br/>
-			<h:commandButton action="#{customDataBean.induceTheory}" value=" Induce Theory >> "></h:commandButton>
+		<br/>
+		<h:commandButton action="#{customDataBean.induceTheory}" value=" Induce Theory >> "></h:commandButton>
+		
+		<br/><br/>
 			
-			<br/><br/>
-			
-			
+	
 		</h:form>
-		
 		
 		
 	</h:panelGroup>

@@ -60,6 +60,14 @@ public class CustomDataBean {
 	private String cElNegSeqs; 
 	private String cElPwms; 
 	
+	//advanced options
+	private double posPatserCutoff;
+	private double negPatserCutoff;
+	private double posDremeCutoff;
+	private double negDremeCutoff;
+	private double posFimoCutoff;
+	private double negFimoCutoff;
+	
 //	private UploadedFile posFile;
 //	private UploadedFile negFile;
 //	private UploadedFile pwmFile;
@@ -73,7 +81,7 @@ public class CustomDataBean {
 				+ FacesContext.getCurrentInstance().getExternalContext().getRealPath(""));
 		
 		
-		//initialize example data		
+		//initialize example data and advanced options default	
 		try {
 			
 			CElegansRegRegionService regRegionService = new CElegansRegRegionService(1);
@@ -85,7 +93,10 @@ public class CustomDataBean {
 			cElPosSeqs = formatSequences(regRegionService.getPositiveRegulatoryRegions());
 			cElNegSeqs = formatSequences(regRegionService.getNegativeRegulatoryRegions());
 			cElPwms = formatPwms(patserRegElService.getRegulatoryElementsPWMs());
-				
+
+			//default advanced options
+			posPatserCutoff = SystemVariables.getInstance().getPositivePatserCutOffScore();
+			negPatserCutoff = SystemVariables.getInstance().getNegativePatserCutOffScore();
 			
 		}catch (DataFormatException e) {
 			
@@ -167,6 +178,14 @@ public class CustomDataBean {
 				regElService = new MemeSuiteRegElementService(theoryOutputDir);
 				
 			}
+			
+			//TODO
+			System.out.println("*** In CustomDataBean, before induce. Patser pos: " + posPatserCutoff);
+			System.out.println("*** In CustomDataBean, before induce. Patser neg: " + negPatserCutoff);
+			System.out.println("*** In CustomDataBean, before induce. Dreme pos: " + posDremeCutoff);
+			System.out.println("*** In CustomDataBean, before induce. Dreme neg: " + negDremeCutoff);
+			System.out.println("*** In CustomDataBean, before induce. Fimo pos: " + posFimoCutoff);
+			System.out.println("*** In CustomDataBean, before induce. Fimo neg: " + negFimoCutoff);
 			
 			/************ Find and load up everything (sequences, biomarkers) ****/
 			Explorer explorer = new Explorer(customRegRegService, regElService, theoryOutputDir);
@@ -297,7 +316,7 @@ public class CustomDataBean {
 
 			} catch (DataFormatException e) {
 				
-				int splitPos = e.getMessage().indexOf(':') + 2;  
+				int splitPos = e.getMessage().indexOf(':') + 1;  
 				// remove "ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException: " from the message
 				String cleanMessage = e.getMessage().substring(splitPos);
 				
@@ -454,6 +473,54 @@ public class CustomDataBean {
 			return SHOW;
 		}
 		return HIDE;
+	}
+	
+	public double getPosPatserCutoff() {
+		return posPatserCutoff;
+	}
+	public void setPosPatserCutoff(double posPatserCutoff) throws DataFormatException {
+		this.posPatserCutoff = posPatserCutoff;
+		SystemVariables.getInstance().setPositivePatserCutOffScore(posPatserCutoff);
+	}
+
+	public double getNegPatserCutoff() {
+		return negPatserCutoff;
+	}
+	public void setNegPatserCutoff(double negPatserCutoff) {
+		this.negPatserCutoff = negPatserCutoff;
+		try {
+			SystemVariables.getInstance().setNegativePatserCutOffScore(negPatserCutoff);
+		} catch (DataFormatException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public double getPosDremeCutoff() {
+		return posDremeCutoff;
+	}
+	public void setPosDremeCutoff(double posDremeCutoff) {
+		this.posDremeCutoff = posDremeCutoff;
+	}
+
+	public double getNegDremeCutoff() {
+		return negDremeCutoff;
+	}
+	public void setNegDremeCutoff(double negDremeCutoff) {
+		this.negDremeCutoff = negDremeCutoff;
+	}
+
+	public double getPosFimoCutoff() {
+		return posFimoCutoff;
+	}
+	public void setPosFimoCutoff(double posFimoCutoff) {
+		this.posFimoCutoff = posFimoCutoff;
+	}
+
+	public double getNegFimoCutoff() {
+		return negFimoCutoff;
+	}
+	public void setNegFimoCutoff(double negFimoCutoff) {
+		this.negFimoCutoff = negFimoCutoff;
 	}
 
 
