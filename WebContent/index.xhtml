@@ -9,7 +9,6 @@
 	<title>Module Inducer</title>
 	
 	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/nihilo/nihilo.css"/>
-	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/claro/claro.css"/>
 	
 	<style> 
     <!--
@@ -100,7 +99,8 @@
 			width: 50px;
 			text-align: right;
 		}
-		
+	
+		.style1 { display:none;}
     -->
    </style>
    
@@ -120,9 +120,36 @@
     <!--
  		// Load the Tooltip widget class
    		dojo.require("dijit.Tooltip");
-    	dojo.ready(function(){         
-			//All code that manipulates the DOM must wait until the DOM is ready before it can be executed.
-        });
+	    dojo.require("dijit.form.Button");
+	    
+	    var hideAdvanced = 1;
+	
+	    function toggle1() {
+	        // toggle div view
+	        dojo.toggleClass("advancedOptionsId", "style1");
+	        
+	              
+	        // toggle button label
+	        if (hideAdvanced == 1){
+	        	dojo.byId("showHideAdvancedBtn").innerHTML = "<<";
+            	hideAdvanced = 0;
+            } else {
+            	dojo.byId("showHideAdvancedBtn").innerHTML = ">>";
+            	hideAdvanced = 1;
+            }
+
+	    }
+	
+	    dojo.addOnLoad(function() {
+	        dojo.connect(dojo.byId("showHideAdvancedBtn"), "onclick", toggle1);
+	        dojo.byId("showHideAdvancedBtn").innerHTML = ">>";
+	        hideAdvanced = 1;
+	    });
+	    
+	
+	    
+       
+    	
     
     // If a specific value (expectedRadioValue) of a radiobutton (radioEL) is selected,
     // then display an element with a specified id (elementToDisplay).
@@ -139,20 +166,30 @@
     	}
     	
    
+    	displayElement(elementToDisplay, displayState);
+        
+    }
+    
+    //Here because of browser differences
+    // elementId - element to show or hide
+    //displayState = 'none' or 'block'
+	function displayElement(elementId, displayState) {
+   
         if (document.all) { //IS IE 4 or 5 (or 6 beta)
-            eval( "document.all." + elementToDisplay + ".style.display = "+ displayState);
+            eval( "document.all." + elementId + ".style.display = "+ displayState);
         }
    
         if (document.layers) { //IS NETSCAPE 4 or below
-            document.layers[elementToDisplay].display = displayState;
+            document.layers[elementId].display = displayState;
         }
        
         if (document.getElementById && !document.all) {
-            document.getElementById(elementToDisplay).style.display = displayState;
+            document.getElementById(elementId).style.display = displayState;
 
         }
         
     }
+    
    
    
     //-->
@@ -205,17 +242,17 @@
 		<h:panelGrid columns="1">
 			<h:panelGroup>
 				<h:outputLabel for="positiveSequencesTextArea" value="Experiment sequences: " styleClass="data-entry-title" ></h:outputLabel>
-				<button id="help_ExperimentSeqBtn" onmouseover="dijit.Tooltip.defaultPosition=['after']" >
+				<button id="help_ExperimentSeqBtn" dojoType="dijit.form.Button" onmouseover="dijit.Tooltip.defaultPosition=['after']" >
 					<font class="help-header-text">?</font>
 				</button>
 				<div class="dijitHidden">
 					<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_ExperimentSeqBtn'">
 						<font class="help-header-text">Experiment sequences</font> <br/>
-						<p>
+						<br/>
 						A set of related DNA sequences, which will be analyzed. <br/>
 						For instance, regions surrounding a binding site of some <br/>
 						transcription factor; samples taken from cancer patients.
-						</p>
+						<br/>
 						Should be in the FASTA format	
 					</span>
 				</div>
@@ -234,15 +271,15 @@
 			 
 			<h:panelGroup>	
                 <h:outputLabel value="Control sequences: " styleClass="data-entry-title" ></h:outputLabel>
-				<button id="help_ControlSeqBtn" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
+				<button id="help_ControlSeqBtn" dojoType="dijit.form.Button" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
 				<div class="dijitHidden">
 					<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_ControlSeqBtn'">
 						<font class="help-header-text">Control sequences</font> <br/>
-						<p>
+						<br/>
 						A set of related DNA sequences, which contrast experiment sequences. <br/>
 						For instance, regions surrounding a binding site of some transcription <br/>
 						factor; samples taken from healthy patients.<br/>
-						</p>
+						<br/>
 						Sequences can be either:<ul>
 						<li>specified in Fasta format (recommended for best results); </li>
 						<li>generated with the same nucleotide composition, as the experiment <br/>sequences;</li>
@@ -275,14 +312,14 @@
                 
 			<h:panelGroup>	
 				<h:outputLabel value="Biological markers: " styleClass="data-entry-title"></h:outputLabel>
-				<button id="help_BioMarkersBtn" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
+				<button id="help_BioMarkersBtn" dojoType="dijit.form.Button" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
 				<div class="dijitHidden">
 					<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_BioMarkersBtn'">
 						<font class="help-header-text">Biological markers</font> <br/>
-						<p>
+						<br/>
 						Transcription factor binding sites or any other over-represented motifs, <br/>
 						found in experiment sequences.
-						</p>
+						<br/>
 						Biological markers can be either:<ul>
 						<li>discovered using DREME;</li>
 						<li>supplied as PSSMs in a FASTA-like format (see example data for<br/>details).</li>
@@ -296,7 +333,7 @@
 			<div class="data-entry-area">
 				<h:selectOneRadio id="bioMarkersRadioId" value="#{customDataBean.bioMarkersType}" onchange="radioToggle1(this, 'customPSSMs', 'customPSSMsDiv');" >
 					<f:selectItem itemValue="useDreme" itemLabel=" Find new using DREME  " />   
-					<f:selectItem itemValue="customPSSMs" itemLabel=" Locate specified using PATSER " />
+					<f:selectItem itemValue="customPSSMs" itemLabel=" Locate specified using Patser " />
                 </h:selectOneRadio>
                    		
 				<div id="customPSSMsDiv" style="display: #{customDataBean.customPSSMsDivDivVisibility};">		
@@ -309,10 +346,12 @@
 			
 			<h:panelGroup>	
 				<h:outputLabel value="Advanced options: " styleClass="data-entry-title"></h:outputLabel>
+				<button id="showHideAdvancedBtn" dojoType="dijit.form.Button" ></button>
 			</h:panelGroup>
 				
 			<h:panelGroup>
 			<div class="data-entry-area">
+			<div id="advancedOptionsId" class="style1">
 			
 				<table border="0" width="100%">
 					<tr>
@@ -321,7 +360,21 @@
 						<td align="right" width="200px"><strong>Control sequences</strong></td>
 					</tr>
 					<tr>
-						<td>PATSER cut-off score</td>
+						<td>PATSER threshold
+							<button id="help_patserCutoffBtn" dojoType="dijit.form.Button" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
+							<div class="dijitHidden">
+								<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_patserCutoffBtn'">
+									<font class="help-header-text">Patser threshold</font> <br/>
+									<br/>
+									Patser's lower threshold for matching motifs. Command line argument: -ls. <br/>
+									<br/>
+									For more information, see Gerald Z. Hertz and Gary D. Stormo. Identifying<br/>
+									DNA and protein patterns with statistically significant alignments of multiple<br/>
+									sequences. Bioinformatics, 15:563-577, 1999.
+									<br/>
+								</span>
+							</div> 
+						</td>
 						<td align="right"> 
 							<h:inputText label="PATSER cut-off score for experiment sequences" id="posPatserCutoff" value="#{customDataBean.posPatserCutoff}" styleClass="options-input-field" /> 
 						</td>
@@ -330,27 +383,45 @@
 						</td>
 					</tr>
 					<tr>
-						<td>DREME cut-off score</td>
-						<td align="right">
-							<h:inputText label="DREME cut-off score for experiment sequences" id="posDremeCutoff" value="#{customDataBean.posDremeCutoff}" styleClass="options-input-field" />
+						<td>DREME E-value threshold
+							<button id="help_dremeCutoffBtn" dojoType="dijit.form.Button" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
+							<div class="dijitHidden">
+								<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_dremeCutoffBtn'">
+									<font class="help-header-text">Dreme E-value threshold</font> <br/>
+									<br/>
+									DREME will stop searching for motifs if this E-value is reached. <br/>
+									Command line argument: -e. <br/>
+									<br/>
+									For more information, see Timothy L. Bailey, "DREME: Motif discovery in<br/>
+									transcription factor ChIP-seq data", Bioinformatics, 27(12):1653-1659, 2011. 
+									<a href="http://bioinformatics.oxfordjournals.org/content/early/2011/05/04/bioinformatics.btr261.full"></a>
+									<br/>
+								</span>
+							</div> 
+							
 						</td>
 						<td align="right">
-							<h:inputText label="DREME cut-off score for control sequences" id="negDremeCutoff" value="#{customDataBean.negDremeCutoff}" styleClass="options-input-field" />
-						</td>
-					</tr>
-					<tr>
-						<td>FIMO cut-off score</td>
-						<td align="right">
-							<h:inputText label="FIMO cut-off score for experiment sequences" id="posFimoCutoff" value="#{customDataBean.posFimoCutoff}" styleClass="options-input-field" />
+							<h:inputText label="DREME E-value threshold" id="dremeCutoff" value="#{customDataBean.dremeCutoff}" styleClass="options-input-field" />
 						</td>
 						<td align="right">
-							<h:inputText label="FIMO cut-off score for control sequences" id="negFimoCutoff" value="#{customDataBean.negFimoCutoff}" styleClass="options-input-field" />
+							--
+							<button id="help_dremeNoNegBtn" dojoType="dijit.form.Button" onmouseover="dijit.Tooltip.defaultPosition=['after']"><font class="help-header-text">?</font></button>
+							<div class="dijitHidden">
+								<span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId:'help_dremeNoNegBtn'">
+									ModuleInducer uses DREME to discover motifs in experiment sequences only. <br/>
+									The discovered motifs are then located in both experiment and control sequences.<br/>
+									<br/>
+									
+									<br/>
+								</span>
+							</div>
 						</td>
 					</tr>
 					
+					
 				</table>
-				
-				
+
+			</div>
 			</div>
 			</h:panelGroup>
 		
@@ -375,7 +446,7 @@
 	<div class="mi_footer">
 		
 				<strong>Questions and suggestions:</strong> <a href="mailto:module.inducer@site.uottawa.ca">module.inducer@site.uottawa.ca</a> <br/>
-				<strong>Last updated:</strong> December 6, 2011
+				<strong>Last updated:</strong> December 16, 2011
 	
 	</div>
 

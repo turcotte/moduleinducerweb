@@ -63,8 +63,7 @@ public class CustomDataBean {
 	//advanced options
 	private double posPatserCutoff;
 	private double negPatserCutoff;
-	private double posDremeCutoff;
-	private double negDremeCutoff;
+	private double dremeCutoff;
 	private double posFimoCutoff;
 	private double negFimoCutoff;
 	
@@ -97,6 +96,7 @@ public class CustomDataBean {
 			//default advanced options
 			posPatserCutoff = SystemVariables.getInstance().getPositivePatserCutOffScore();
 			negPatserCutoff = SystemVariables.getInstance().getNegativePatserCutOffScore();
+			dremeCutoff =  SystemVariables.getInstance().getDremeCutOffScore();
 			
 		}catch (DataFormatException e) {
 			
@@ -182,8 +182,7 @@ public class CustomDataBean {
 			//TODO
 			System.out.println("*** In CustomDataBean, before induce. Patser pos: " + posPatserCutoff);
 			System.out.println("*** In CustomDataBean, before induce. Patser neg: " + negPatserCutoff);
-			System.out.println("*** In CustomDataBean, before induce. Dreme pos: " + posDremeCutoff);
-			System.out.println("*** In CustomDataBean, before induce. Dreme neg: " + negDremeCutoff);
+			System.out.println("*** In CustomDataBean, before induce. Dreme: " + dremeCutoff);
 			System.out.println("*** In CustomDataBean, before induce. Fimo pos: " + posFimoCutoff);
 			System.out.println("*** In CustomDataBean, before induce. Fimo neg: " + negFimoCutoff);
 			
@@ -486,27 +485,17 @@ public class CustomDataBean {
 	public double getNegPatserCutoff() {
 		return negPatserCutoff;
 	}
-	public void setNegPatserCutoff(double negPatserCutoff) {
+	public void setNegPatserCutoff(double negPatserCutoff) throws DataFormatException {
 		this.negPatserCutoff = negPatserCutoff;
-		try {
-			SystemVariables.getInstance().setNegativePatserCutOffScore(negPatserCutoff);
-		} catch (DataFormatException e) {
-			e.printStackTrace();
-		}
+		SystemVariables.getInstance().setNegativePatserCutOffScore(negPatserCutoff);
 	}
 	
-	public double getPosDremeCutoff() {
-		return posDremeCutoff;
+	public double getDremeCutoff() {
+		return dremeCutoff;
 	}
-	public void setPosDremeCutoff(double posDremeCutoff) {
-		this.posDremeCutoff = posDremeCutoff;
-	}
-
-	public double getNegDremeCutoff() {
-		return negDremeCutoff;
-	}
-	public void setNegDremeCutoff(double negDremeCutoff) {
-		this.negDremeCutoff = negDremeCutoff;
+	public void setDremeCutoff(double dremeCutoff) throws DataFormatException {
+		this.dremeCutoff = dremeCutoff;
+		SystemVariables.getInstance().setDremeCutOffScore(dremeCutoff);
 	}
 
 	public double getPosFimoCutoff() {
